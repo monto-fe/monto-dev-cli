@@ -1,0 +1,125 @@
+const path = require('path');
+const fs = require('fs');
+const execa = require('execa');
+const ora = require('ora');
+
+const spinner = ora('Loading unicorns').start();
+const logger = require('../lib/logger');
+
+module.exports = async (argv) => {
+  const result = {};
+  // 1. 获取当前执行指令的目录地址，生成的文件放在这里
+  const rootPath = await getPath();
+  const templatePathRoot = `${rootPath}/generate-components`;
+  const templatePathDir = `/dux-templates/components/component.js`;
+  // 2. 处理参数
+  await processRequest(argv, result)
+
+  // 3. 生成模板根路径
+  await generateDir(rootPath, result)
+
+  // 4. 拉取远程模板
+  const template = await getRemoteTemplate(rootPath);
+
+  // 5. 根据请求参数修改对应生成文件
+  await run(rootPath, `${templatePathRoot}${templatePathDir}`, result);
+
+  // 6. 收尾工作
+  afterRun(templatePathRoot);
+};
+
+const getPath = async () => {
+  spinner.text = logger.step({ step: '[1/6]', content: '获取当前路径...' });
+  return process.cwd();
+}
+
+const processRequest = async (argv, result) => {
+  setTimeout(() => logger.stepL({ step: '[1/6]', content: '获取当前路径...' }));
+  spinner.text = logger.step({ step: '[2/6]', content: '处理指令参数...' });
+
+  if (argv.component && argv.component.length) {
+    result.component = argv.component,
+      result.componentType = argv.type
+  }
+}
+
+const generateDir = async (rootPath, result) => {
+  setTimeout(() => logger.stepL({ step: '[2/6]', content: '处理指令参数...' }));
+  spinner.text = logger.step({ step: '[3/6]', content: '生成模板文件夹...' });
+
+  if (result.component && result.component.length) {
+    try {
+      fs.mkdirSync(`${rootPath}/generate-components`);
+    } catch {
+      logger.warn('当前用户没有文件操作权限或者 generate-components 目录已存在 !')
+    }
+  }
+}
+
+const getRemoteTemplate = async rootPath => {
+  setTimeout(() => logger.stepL({ step: '[3/6]', content: '生成模板文件夹...' }));
+  spinner.text = logger.step({ step: '[4/6]', content: '拉取模板...' });
+  
+  try {
+    const template = await execa(`git`, ['clone', 'https://gitee.com/dh1992/dux-templates.git'], { cwd: `${rootPath}/generate-components`, })
+    
+    return template;
+  } catch(e) {
+    logger.warn('该模板文件未生成 !')
+  }
+}
+
+const run = async (rootPath, templatePath, result) => {
+  setTimeout(() => logger.stepL({ step: '[4/6]', content: '拉取模板...' }));
+  spinner.text = logger.step({ step: '[5/6]', content: '生成目标文件...' });
+
+  try {
+    fs.readFile(templatePath, (error, data) => {
+      result.component.forEach(com => {
+        if (error) {
+          logger.error('生成文件失败 ! 模板文件读取失败 !')
+        }
+
+        const comPath = `${rootPath}/${com}`;
+        const file = processFileContent(data, com);
+      
+        if (fs.existsSync(comPath)) {
+          fs.rmSync(comPath, { force: true, recursive: true });
+        }
+
+        generateFile(comPath, file)
+      });
+    });
+  } catch {
+    logger.error('生成文件失败 !')
+  }
+}
+
+const processFileContent = (data, com) => {
+  const dataString = data.toString();
+  return dataString.replaceAll('component', `${com[0].toUpperCase()}${com.slice(1, com.length - 1)}`);
+}
+
+const generateFile = (comPath, file, type = 'js') => {
+  fs.mkdirSync(comPath);
+
+  // 生成js文件
+  fs.writeFileSync(`${comPath}/index.js`, file);
+}
+
+const afterRun = templatePathRoot => {
+  setTimeout(() => logger.stepL({ step: '[5/6]', content: '生成目标文件...' }));
+  spinner.text = logger.step({ step: '[6/6]', content: '清理模板文件...' });
+
+  fs.rmSync(templatePathRoot, { force: true, recursive: true });
+
+  spinner.stop();
+  setTimeout(() => logger.stepL({ step: '[6/6]', content: '清理模板文件...' }));
+}
+
+const useLoading = async () => {
+  const { default: ora } = await import("ora");
+  const spinners = ora('loading...\r\n');
+
+  return { start: spinners.start.bind(this), stop: spinners.stop }
+}
