@@ -3,7 +3,7 @@ const fs = require('fs');
 const execa = require('execa');
 const ora = require('ora');
 
-const spinner = ora('Loading unicorns').start();
+const spinner = ora('Loading...').start();
 const logger = require('../lib/logger');
 
 module.exports = async (argv) => {
@@ -23,8 +23,9 @@ module.exports = async (argv) => {
   const template = await getRemoteTemplate(rootPath);
 
   // 5. 根据请求参数修改对应生成文件
-  const name = result.styled ? 'style-wrapper' : 'component';
+  const name = argv.s ? 'style-wrapper' : 'component';
   const templatePathDir = `/dux-templates/components/${result.componentType}-${name}.${result.languageType}`;
+
   await run(rootPath, `${templatePathRoot}${templatePathDir}`, result);
 
   // 6. 收尾工作
@@ -45,10 +46,10 @@ const processRequest = async (argv, result) => {
     result.componentType = argv.type;
     // 组件名称集合
     result.component = argv.component;
-    result.styled = argv.styled;
-    // js还是ts
-    result.languageType = argv.language;
   }
+  result.styled = argv.styled;
+  // js还是ts
+  result.languageType = argv.language;
 };
 
 const generateDir = async (rootPath, result) => {
@@ -102,7 +103,7 @@ const run = async (rootPath, templatePath, result) => {
           fs.rmSync(comPath, { force: true, recursive: true });
         }
 
-        generateFile(comPath, file);
+        generateFile(comPath, file, result.languageType || 'jsx');
       });
     });
   } catch {
@@ -111,7 +112,6 @@ const run = async (rootPath, templatePath, result) => {
 };
 
 const processFileContent = (data, com) => {
-  console.log(data);
   const dataString = data.toString();
   return dataString.replaceAll(
     'component',
@@ -123,7 +123,7 @@ const generateFile = (comPath, file, type = 'js') => {
   fs.mkdirSync(comPath);
 
   // 生成js文件
-  fs.writeFileSync(`${comPath}/index.js`, file);
+  fs.writeFileSync(`${comPath}/index.${type}`, file);
 };
 
 const afterRun = (templatePathRoot) => {
@@ -136,9 +136,9 @@ const afterRun = (templatePathRoot) => {
   setTimeout(() => logger.stepL({ step: '[6/6]', content: '清理模板文件...' }));
 };
 
-const useLoading = async () => {
-  const { default: ora } = await import('ora');
-  const spinners = ora('loading...\r\n');
+// const useLoading = async () => {
+//   const { default: ora } = await import('ora');
+//   const spinners = ora('loading...\r\n');
 
-  return { start: spinners.start.bind(this), stop: spinners.stop };
-};
+//   return { start: spinners.start.bind(this), stop: spinners.stop };
+// };
