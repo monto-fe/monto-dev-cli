@@ -1,0 +1,49 @@
+{
+	"name": "monto-dev-cli",
+	"version": "0.0.1",
+	"description": "Cli tool for frontend app dev",
+	"author": "heng.du <853788089@qq.com>",
+	"license": "MIT",
+	"type": "commonjs",
+	"bin": {
+		"react-dev-cli": "index.js"
+	},
+	"gitHooks": {
+		"pre-commit": "lint-staged"
+	},
+	"main": "index.js",
+	"files": [
+		"index.js",
+		"config.js",
+		"command",
+		"lib",
+		"README.md"
+	],
+	"scripts": {
+		"prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
+		"docs:update": "node scripts/docs.js",
+		"publish:patch": "npm version patch && npm publish"
+	},
+	"dependencies": {
+		"ansi-colors": "^4.1.3",
+		"execa": "^5.1.1",
+		"ora": "^5.4.1",
+		"yargs": "^13.2.4"
+	},
+	"engines": {
+		"node": ">=8.10.0"
+	},
+	"devDependencies": {
+		"lint-staged": "^13.0.3",
+		"prettier": "^2.7.1",
+		"yorkie": "^2.0.0"
+	},
+	"lint-staged": {
+		"*.{js,jsx,less,md,json}": [
+			"prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
+		],
+		"*.ts?(x)": [
+			"prettier --parser=typescript --write"
+		]
+	}
+}
