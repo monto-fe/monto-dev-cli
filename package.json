@@ -1,7 +1,7 @@
 {
-	"name": "dux-react-dev-cli",
+	"name": "monto-dev-cli",
 	"version": "0.0.1",
-	"description": "Cli tool for react app dev",
+	"description": "Cli tool for frontend app dev",
 	"author": "heng.du <853788089@qq.com>",
 	"license": "MIT",
 	"type": "commonjs",
@@ -22,7 +22,7 @@
 	"scripts": {
 		"prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
 		"docs:update": "node scripts/docs.js",
-		"publish:patch": "npm version patch && npm publish --registry=http://registry.npm.pre.ucloudadmin.com"
+		"publish:patch": "npm version patch && npm publish"
 	},
 	"dependencies": {
 		"ansi-colors": "^4.1.3",
