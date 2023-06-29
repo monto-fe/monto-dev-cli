@@ -1,12 +1,12 @@
 ## 安装
 
-yarn add dux-react-dev-cli
+yarn add monto-dev-cli
 
 ## 使用
 
-react-dev-cli g -c Box Button -t function
+monto-dev-cli g -c Box Button -t function
 
-react-dev-cli c -p
+monto-dev-cli c -p
 
 功能规划：
 
