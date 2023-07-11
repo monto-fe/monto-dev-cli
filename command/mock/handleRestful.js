@@ -4,8 +4,13 @@ const fs = require('fs');
 const chalk = require('chalk');
 const env = require('./env');
 
+function generateApi() {}
+
+function checkAPIPath() {}
+
 module.exports = function handleRestful(app, autoCreate) {
   const filePath = path.resolve(process.cwd(), `${env.path}/`);
+  console.log('restful filePath', filePath);
   if (!fs.existsSync(filePath)) {
     if (autoCreate) {
       fs.mkdir(`mock`, function (err) {

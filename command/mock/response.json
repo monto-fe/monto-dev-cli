@@ -1,0 +1,33 @@
+{
+  "Add": {
+    "Action": "Add",
+    "RetCode": 0,
+    "Message": "success",
+    "Data": ""
+  },
+  "Delete": {
+    "Action": "Delete",
+    "RetCode": 0,
+    "Message": "success",
+    "Data": ""
+  },
+  "Update": {
+    "Action": "Update",
+    "RetCode": 0,
+    "Message": "success",
+    "Data": ""
+  },
+  "Query": {
+    "Action": "Query",
+    "RetCode": 0,
+    "Message": "",
+    "Data|1-10": [
+      {
+        "Id|+1": 1,
+        "Name": "@name",
+        "Email": "@email",
+        "Portrait": "@image"
+      }
+    ]
+  }
+}

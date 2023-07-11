@@ -4,7 +4,6 @@ const execa = require('execa');
 const ora = require('ora');
 const childProcess = require('child_process');
 
-const spinner = ora('Loading...').start();
 const logger = require('../../lib/logger');
 const dataPackage = require('../../package.json');
 
@@ -18,6 +17,7 @@ module.exports = async (argv) => {
 };
 
 const configPrettier = async () => {
+  const spinner = ora('Loading...').start();
   // 2. 读取 package.json
   if (!dataPackage) {
     logger.warnL('项目根目录下 package.json 文件不存在!');

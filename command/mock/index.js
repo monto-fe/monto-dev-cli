@@ -1,12 +1,12 @@
 const express = require('express');
 const responseTime = require('response-time');
 const bodyParser = require('body-parser');
+const chalk = require('chalk');
 
 const handleAction = require('./handleAction');
 const handleRestful = require('./handleRestful');
 const logger = require('../../lib/logger');
 
-// 可选参数 port提供的服务端口号
 // type API风格，默认Restful
 // autoCreate: false 是否自动生成
 // timeout: 0, 支持接口延时返回
@@ -57,7 +57,25 @@ module.exports = function (args) {
   }
 
   const startServer = () =>
-    app.listen(port, () => console.log(`Mock api listening on port ${port}!`));
+    app.listen(port, () => {
+      console.log(`Mock api listening on port ${port}!`);
+      switch (type) {
+        case 'action':
+          console.log(
+            chalk.green(
+              `example: curl --location --request POST 'http://localhost:${port}' \ --header 'Content-Type: application/json' \ --data-raw '{ "Action": "Query" }'`,
+            ),
+          );
+          break;
+        case 'restful':
+          console.log(
+            chalk.green(
+              `example: curl --location --request POST 'http://localhost:${port}/api' \ --header 'Content-Type: application/json'`,
+            ),
+          );
+          break;
+      }
+    });
 
   startServer();
 };

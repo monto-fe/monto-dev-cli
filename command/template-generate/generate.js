@@ -3,41 +3,37 @@ const fs = require('fs');
 const execa = require('execa');
 const ora = require('ora');
 
-const spinner = ora('Loading...').start();
 const logger = require('../../lib/logger');
 
 module.exports = async (argv) => {
   const result = {};
-
+  const spinner = ora(
+    logger.step({ step: '[1/6]', content: '获取当前路径...' }),
+  ).start();
   // 1. 获取当前执行指令的目录地址，生成的文件放在这里
-  const rootPath = await getPath();
+  const rootPath = process.cwd();
   const templatePathRoot = `${rootPath}/generate-components`;
 
   // 2. 处理参数
-  await processRequest(argv, result);
+  await processRequest(argv, result, spinner, spinner);
 
   // 3. 生成模板存放根路径
-  await generateDir(rootPath, result);
+  await generateDir(rootPath, result, spinner);
 
   // 4. 拉取远程模板
-  const template = await getRemoteTemplate(rootPath);
+  const template = await getRemoteTemplate(rootPath, spinner);
 
   // 5. 根据请求参数修改对应生成文件
   const name = argv.s ? 'style-wrapper' : 'component';
   const templatePathDir = `/dux-templates/components/${result.componentType}-${name}.${result.languageType}`;
 
-  await run(rootPath, `${templatePathRoot}${templatePathDir}`, result);
+  await run(rootPath, `${templatePathRoot}${templatePathDir}`, result, spinner);
 
   // 6. 收尾工作
-  afterRun(templatePathRoot);
+  afterRun(templatePathRoot, spinner);
 };
 
-const getPath = async () => {
-  spinner.text = logger.step({ step: '[1/6]', content: '获取当前路径...' });
-  return process.cwd();
-};
-
-const processRequest = async (argv, result) => {
+const processRequest = async (argv, result, spinner) => {
   setTimeout(() => logger.stepL({ step: '[1/6]', content: '获取当前路径...' }));
   spinner.text = logger.step({ step: '[2/6]', content: '处理指令参数...' });
 
@@ -52,7 +48,7 @@ const processRequest = async (argv, result) => {
   result.languageType = argv.language;
 };
 
-const generateDir = async (rootPath, result) => {
+const generateDir = async (rootPath, result, spinner) => {
   setTimeout(() => logger.stepL({ step: '[2/6]', content: '处理指令参数...' }));
   spinner.text = logger.step({ step: '[3/6]', content: '生成模板文件夹...' });
 
@@ -67,7 +63,7 @@ const generateDir = async (rootPath, result) => {
   }
 };
 
-const getRemoteTemplate = async (rootPath) => {
+const getRemoteTemplate = async (rootPath, spinner) => {
   setTimeout(() =>
     logger.stepL({ step: '[3/6]', content: '生成模板文件夹...' }),
   );
@@ -85,7 +81,7 @@ const getRemoteTemplate = async (rootPath) => {
   }
 };
 
-const run = async (rootPath, templatePath, result) => {
+const run = async (rootPath, templatePath, result, spinner) => {
   setTimeout(() => logger.stepL({ step: '[4/6]', content: '拉取模板...' }));
   spinner.text = logger.step({ step: '[5/6]', content: '生成目标文件...' });
 
@@ -126,7 +122,7 @@ const generateFile = (comPath, file, type = 'js') => {
   fs.writeFileSync(`${comPath}/index.${type}`, file);
 };
 
-const afterRun = (templatePathRoot) => {
+const afterRun = (templatePathRoot, spinner) => {
   setTimeout(() => logger.stepL({ step: '[5/6]', content: '生成目标文件...' }));
   spinner.text = logger.step({ step: '[6/6]', content: '清理模板文件...' });
 

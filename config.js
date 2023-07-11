@@ -87,7 +87,7 @@ const commandConfigs = [
       },
       customPath: {
         type: 'string',
-        default: './mock',
+        default: '',
         describe: '自定义配置json数据存放路径',
       },
       headers: {
@@ -97,7 +97,6 @@ const commandConfigs = [
       },
     },
     callback: async (argv) => {
-      console.log('argv', argv);
       mock({
         ...argv,
       });
