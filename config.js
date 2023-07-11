@@ -1,57 +1,6 @@
-// const c = require('ansi-colors');
-
-const logger = require('./lib/logger');
-
-const callback = async (argv) => {
-  const generate = require('./command/generate');
-
-  console.log(' ');
-  console.log('================== start ==================');
-  console.log(' ');
-  logger.successL('Start to run React dev generate:');
-  console.table(buildRequestMessage(argv));
-
-  await generate(argv);
-
-  setTimeout(() => {
-    console.log(' ');
-    console.log('生成完毕! done !');
-    console.log(' ');
-    console.log('================== end ===================');
-    console.log(' ');
-  });
-};
-
-const configCallback = async (argv) => {
-  const gitHooks = require('./command/gitHooks');
-
-  // 配置 githooks，需在项目根目录下使用
-  console.log(' ');
-  console.log('================== start ==================');
-  console.log(' ');
-  logger.successL('Start to config: ' + argv.prettier);
-
-  await gitHooks(argv);
-
-  setTimeout(() => {
-    console.log(' ');
-    console.log('配置完毕! done !');
-    console.log(' ');
-    console.log('================== end ===================');
-    console.log(' ');
-  });
-};
-
-const buildRequestMessage = (argv) => {
-  const result = [];
-  if (argv.component && argv.component.length) {
-    argv.component.forEach((com) =>
-      result.push({ 名称: com, 类型: '组件', 组件类型: argv.type }),
-    );
-  }
-
-  return result;
-};
+const callback = require('./command/git-hooks');
+const templateGenerate = require('./command/template-generate');
+const mock = require('./command/mock');
 
 const commandConfigs = [
   {
@@ -107,7 +56,52 @@ const commandConfigs = [
         describeEN: 'Config prettier',
       },
     },
-    callback: configCallback,
+    callback: templateGenerate,
+  },
+  {
+    command: 'mock',
+    description: '启动一个本地服务，模拟返回接口数据',
+    options: {
+      type: {
+        type: 'string',
+        default: 'action',
+        describe: '选择API类型',
+        choices: ['action', 'restful'],
+      },
+      port: {
+        type: 'number',
+        default: 9000,
+        describe: '选择启动的端口号',
+      },
+      timeout: {
+        alias: 't',
+        type: 'number',
+        default: 0,
+        describe: '默认延时返回请求 0ms',
+      },
+      autoCreate: {
+        alias: 'c',
+        type: 'boolean',
+        default: false,
+        describe: '如果mock目录不存在是否自动创建，默认不自动创建',
+      },
+      customPath: {
+        type: 'string',
+        default: './mock',
+        describe: '自定义配置json数据存放路径',
+      },
+      headers: {
+        type: 'array',
+        default: [],
+        describe: 'please enter custom key-value',
+      },
+    },
+    callback: async (argv) => {
+      console.log('argv', argv);
+      mock({
+        ...argv,
+      });
+    },
   },
 ];
 

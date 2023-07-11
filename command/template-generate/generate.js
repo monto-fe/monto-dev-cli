@@ -4,7 +4,7 @@ const execa = require('execa');
 const ora = require('ora');
 
 const spinner = ora('Loading...').start();
-const logger = require('../lib/logger');
+const logger = require('../../lib/logger');
 
 module.exports = async (argv) => {
   const result = {};

@@ -5,8 +5,8 @@ const ora = require('ora');
 const childProcess = require('child_process');
 
 const spinner = ora('Loading...').start();
-const logger = require('../lib/logger');
-const dataPackage = require('../package.json');
+const logger = require('../../lib/logger');
+const dataPackage = require('../../package.json');
 
 module.exports = async (argv) => {
   // 1. 处理参数
