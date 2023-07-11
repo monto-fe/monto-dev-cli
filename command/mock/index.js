@@ -70,7 +70,7 @@ module.exports = function (args) {
         case 'restful':
           console.log(
             chalk.green(
-              `example: curl --location --request POST 'http://localhost:${port}/api' \ --header 'Content-Type: application/json'`,
+              `example: curl --location --request GET 'http://localhost:${port}/v1/user' \ --header 'Content-Type: application/json'`,
             ),
           );
           break;

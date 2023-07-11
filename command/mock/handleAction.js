@@ -11,7 +11,7 @@ function createActionMockData(filePath) {
   const spinner = ora('Generating mock data...').start();
   try {
     fs.mkdirSync(`${filePath}`, { recursive: true });
-    const data = readJson(path.join(__dirname, 'response.json'));
+    const data = readJson(path.join(__dirname, 'utils', 'actionRes.json'));
     Object.keys(data).forEach((key) => {
       let dataJson = JSON.stringify(data[key], '', '\t');
       fs.writeFileSync(`${filePath}/${key}.json`, dataJson);
@@ -23,7 +23,7 @@ function createActionMockData(filePath) {
   }
 }
 
-function generateApi(app, filePath, timeout) {
+function generateApi(app, filePath) {
   app.post('*', async (req, res) => {
     const { Action } = req.body;
 
@@ -37,23 +37,14 @@ function generateApi(app, filePath, timeout) {
         if (err) {
           res.send(env.notFoundResponse);
         } else {
-          setTimeout(() => {
-            res.send(Mock.mock(JSON.parse(data)));
-          }, timeout);
+          res.send(Mock.mock(JSON.parse(data)));
         }
       });
     }
   });
 }
 
-module.exports = function handleAction(
-  app,
-  autoCreate,
-  customPath,
-  timeout,
-  ...rest
-) {
-  const { port } = rest;
+module.exports = function handleAction(app, autoCreate, customPath) {
   const filePath = path.resolve(
     process.cwd(),
     customPath ? customPath : `${env.path}/action`,
@@ -67,6 +58,6 @@ module.exports = function handleAction(
     createActionMockData(filePath);
   } else {
     // start proxy
-    generateApi(app, filePath, timeout, port);
+    generateApi(app, filePath);
   }
 };
