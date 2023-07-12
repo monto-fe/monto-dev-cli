@@ -59,6 +59,12 @@ module.exports = async function (args) {
     }, timeout);
   });
 
+  app.get('/monto/docs', function (_, res) {
+    res.send(
+      `<div>this page will show setting and cli usage, open default page</div>`,
+    );
+  });
+
   switch (type) {
     case 'action':
       handleAction(app, customPath);
@@ -78,7 +84,7 @@ module.exports = async function (args) {
       switch (type) {
         case 'action':
           logger.success(
-            `example: curl --location --request POST 'http://localhost:${port}' \ --header 'Content-Type: application/json' \ --data-raw '{ "Action": "Query" }'`,
+            `example: curl --location --request POST 'http://localhost:${port}' --header 'Content-Type: application/json' --data-raw '{ "Action": "Query" }'`,
           );
           break;
         case 'restful':
@@ -86,7 +92,7 @@ module.exports = async function (args) {
             await open(`http://localhost:${port}/v1/user`);
           } else {
             logger.success(
-              `example: curl --location --request GET 'http://localhost:${port}/v1/user' \ --header 'Content-Type: application/json'`,
+              `example: curl --location --request GET 'http://localhost:${port}/v1/user' --header 'Content-Type: application/json'`,
             );
           }
           break;

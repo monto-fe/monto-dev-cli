@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-/* eslint-disable node/shebang */
+/* eslint-disable */
 const yargs = require('yargs');
 
 const config = require('./config');
