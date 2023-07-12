@@ -23,7 +23,7 @@
 		"start": "node ./index.js",
 		"prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
 		"docs:update": "node scripts/docs.js",
-		"publish:patch": "npm version patch && npm publish"
+		"publish:patch": "npm version patch && npm publish --registry=https://registry.npmjs.org"
 	},
 	"dependencies": {
 		"chalk": "4",
