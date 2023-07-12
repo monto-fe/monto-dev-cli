@@ -14,3 +14,5 @@ monto-dev-cli c -p
 2. 生成 emotion 样式包裹组件
 3. 一键配置 githook + eslint
 4. 创建组件蓝图，上传优秀组件，便于复用
+
+将 CLI 通过 docker-compose 构建，完成一键启动 CLI 服务，界面操作
