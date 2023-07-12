@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"type": "commonjs",
 	"bin": {
-		"react-dev-cli": "index.js"
+		"monto-dev-cli": "index.js"
 	},
 	"gitHooks": {
 		"pre-commit": "lint-staged"
@@ -47,7 +47,8 @@
 	},
 	"lint-staged": {
 		"*.{js,jsx,less,md,json}": [
-			"prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
+			"prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
+			"npx eslint \"**/*.{js,ts}\""
 		],
 		"*.ts?(x)": [
 			"prettier --parser=typescript --write"

@@ -20,7 +20,7 @@ module.exports = async (argv) => {
   await generateDir(rootPath, result, spinner);
 
   // 4. 拉取远程模板
-  const template = await getRemoteTemplate(rootPath, spinner);
+  await getRemoteTemplate(rootPath, spinner);
 
   // 5. 根据请求参数修改对应生成文件
   const name = argv.s ? 'style-wrapper' : 'component';

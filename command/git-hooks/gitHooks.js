@@ -1,4 +1,3 @@
-const path = require('path');
 const fs = require('fs');
 const ora = require('ora');
 const childProcess = require('child_process');
@@ -63,7 +62,7 @@ const configPrettier = async () => {
   logger.step({ step: '[2/2]', content: '安装依赖中...' });
   spinner.text = logger.step({ step: '[2/2]', content: '安装依赖中...' });
 
-  const res = childProcess.execSync(
+  childProcess.execSync(
     'yarn add -D lint-staged prettier yorkie',
     (error, stdout, stderr) => {
       console.log('config callback', error, stdout, stderr);
