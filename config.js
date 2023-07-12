@@ -60,40 +60,41 @@ const commandConfigs = [
   },
   {
     command: 'mock',
-    description: '启动一个本地服务，模拟返回接口数据',
+    description: 'Start a local server to mock returning API data.',
     options: {
       type: {
         type: 'string',
-        default: 'action',
-        describe: '选择API类型',
-        choices: ['action', 'restful'],
+        default: '',
+        describe: 'Choosing an API style',
+        choices: ['', 'restful', 'action'],
       },
       port: {
         type: 'number',
         default: 9000,
-        describe: '选择启动的端口号',
+        describe: 'Choosing a port number for startup',
       },
       timeout: {
         alias: 't',
         type: 'number',
         default: 0,
-        describe: '默认延时返回请求 0ms',
-      },
-      autoCreate: {
-        alias: 'c',
-        type: 'boolean',
-        default: false,
-        describe: '如果mock目录不存在是否自动创建，默认不自动创建',
+        describe: 'Setting API delay for response.',
       },
       customPath: {
         type: 'string',
         default: '',
-        describe: '自定义配置json数据存放路径',
+        describe:
+          'Mock data storage path, absolute path, default to the current CLI execution path.',
       },
       headers: {
         type: 'array',
         default: [],
-        describe: 'please enter custom key-value',
+        describe: 'Please enter the custom request headers for CORS.',
+      },
+      withoutOpenBrowser: {
+        alias: 'withoutOpen',
+        type: 'boolean',
+        default: false,
+        describe: 'Open the browser',
       },
     },
     callback: async (argv) => {

@@ -10,7 +10,7 @@
         }
       ]
     },
-    "v1/user/${id}": {
+    "v1/user/5": {
       "RetCode": 0,
       "Message": "success",
       "Data": {
@@ -27,7 +27,7 @@
     }
   },
   "put": {
-    "v1/update/${id}": {
+    "v1/update/5": {
       "RetCode": 0,
       "Message": "success",
       "Data": ""

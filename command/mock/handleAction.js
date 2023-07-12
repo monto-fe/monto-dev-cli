@@ -1,34 +1,13 @@
 const path = require('path');
 const fs = require('fs');
 const Mock = require('mockjs');
-const ora = require('ora');
 const env = require('./env');
-const logger = require('../../lib/logger');
-const checkAction = require('./utils/checkAction');
-const { readJson } = require('./utils');
-
-function createActionMockData(filePath) {
-  const spinner = ora('Generating mock data...').start();
-  try {
-    fs.mkdirSync(`${filePath}`, { recursive: true });
-    const data = readJson(path.join(__dirname, 'utils', 'actionRes.json'));
-    Object.keys(data).forEach((key) => {
-      let dataJson = JSON.stringify(data[key], '', '\t');
-      fs.writeFileSync(`${filePath}/${key}.json`, dataJson);
-    });
-    spinner.succeed('Generate mock data is success');
-  } catch (err) {
-    logger.errorL(err.message);
-    spinner.fail(`There is an error: ${err.message}`);
-  }
-}
+const { checkAction, createActionMockData } = require('./utils');
 
 function generateApi(app, filePath) {
   app.post('*', async (req, res) => {
     const { Action } = req.body;
-
     const hasAction = checkAction(Action, filePath);
-
     if (!hasAction) {
       res.send(env.notFoundResponse);
     } else {
@@ -44,20 +23,15 @@ function generateApi(app, filePath) {
   });
 }
 
-module.exports = function handleAction(app, autoCreate, customPath) {
-  const filePath = path.resolve(
-    process.cwd(),
-    customPath ? customPath : `${env.path}/action`,
-  );
+module.exports = function handleAction(app, customPath) {
+  const filePath = customPath
+    ? customPath
+    : path.resolve(process.cwd(), env.mockPath.action);
 
-  if (!fs.existsSync(filePath) && !autoCreate) {
-    // 不自动创建且没有目录，提示阅读文档自行创建
-    logger.errorL('please create mock data first, example: url');
-  } else if (!fs.existsSync(filePath) && autoCreate) {
-    // mock数据不存在，自动创建
+  // Mock data does not exist, automatically creating it.
+  if (!fs.existsSync(filePath)) {
     createActionMockData(filePath);
-  } else {
-    // start proxy
-    generateApi(app, filePath);
   }
+  // proxy mock api
+  generateApi(app, filePath);
 };

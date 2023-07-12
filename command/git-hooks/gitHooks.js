@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const execa = require('execa');
 const ora = require('ora');
 const childProcess = require('child_process');
 
@@ -20,11 +19,11 @@ const configPrettier = async () => {
   const spinner = ora('Loading...').start();
   // 2. 读取 package.json
   if (!dataPackage) {
-    logger.warnL('项目根目录下 package.json 文件不存在!');
+    logger.warn('项目根目录下 package.json 文件不存在!');
   }
 
   if (dataPackage.gitHooks) {
-    logger.warnL('package.json 已经配置了 gitHooks!');
+    logger.warn('package.json 已经配置了 gitHooks!');
   } else {
     Object.assign(dataPackage, {
       gitHooks: {
@@ -50,10 +49,10 @@ const configPrettier = async () => {
       },
     });
   } else {
-    logger.warnL('package.json 已经配置了 lint-staged!');
+    logger.warn('package.json 已经配置了 lint-staged!');
   }
 
-  logger.stepL({ step: '[1/2]', content: '写入 package.json...' });
+  logger.step({ step: '[1/2]', content: '写入 package.json...' });
   spinner.text = logger.step({
     step: '[1/2]',
     content: '写入 package.json...',
@@ -61,7 +60,7 @@ const configPrettier = async () => {
 
   fs.writeFileSync(`package.json`, JSON.stringify(dataPackage, null, '\t'));
 
-  logger.stepL({ step: '[2/2]', content: '安装依赖中...' });
+  logger.step({ step: '[2/2]', content: '安装依赖中...' });
   spinner.text = logger.step({ step: '[2/2]', content: '安装依赖中...' });
 
   const res = childProcess.execSync(

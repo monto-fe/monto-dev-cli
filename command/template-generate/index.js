@@ -16,7 +16,7 @@ module.exports = function templateGenerate(argv) {
   console.log(' ');
   console.log('================== start ==================');
   console.log(' ');
-  logger.successL('Start to run React dev generate:');
+  logger.success('Start to run React dev generate:');
   console.table(buildRequestMessage(argv));
 
   generate(argv);

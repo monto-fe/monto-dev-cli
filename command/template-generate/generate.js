@@ -1,4 +1,3 @@
-const path = require('path');
 const fs = require('fs');
 const execa = require('execa');
 const ora = require('ora');
@@ -34,7 +33,7 @@ module.exports = async (argv) => {
 };
 
 const processRequest = async (argv, result, spinner) => {
-  setTimeout(() => logger.stepL({ step: '[1/6]', content: '获取当前路径...' }));
+  setTimeout(() => logger.step({ step: '[1/6]', content: '获取当前路径...' }));
   spinner.text = logger.step({ step: '[2/6]', content: '处理指令参数...' });
 
   if (argv.component && argv.component.length) {
@@ -49,7 +48,7 @@ const processRequest = async (argv, result, spinner) => {
 };
 
 const generateDir = async (rootPath, result, spinner) => {
-  setTimeout(() => logger.stepL({ step: '[2/6]', content: '处理指令参数...' }));
+  setTimeout(() => logger.step({ step: '[2/6]', content: '处理指令参数...' }));
   spinner.text = logger.step({ step: '[3/6]', content: '生成模板文件夹...' });
 
   if (result.component && result.component.length) {
@@ -65,7 +64,7 @@ const generateDir = async (rootPath, result, spinner) => {
 
 const getRemoteTemplate = async (rootPath, spinner) => {
   setTimeout(() =>
-    logger.stepL({ step: '[3/6]', content: '生成模板文件夹...' }),
+    logger.step({ step: '[3/6]', content: '生成模板文件夹...' }),
   );
   spinner.text = logger.step({ step: '[4/6]', content: '拉取模板...' });
 
@@ -82,7 +81,7 @@ const getRemoteTemplate = async (rootPath, spinner) => {
 };
 
 const run = async (rootPath, templatePath, result, spinner) => {
-  setTimeout(() => logger.stepL({ step: '[4/6]', content: '拉取模板...' }));
+  setTimeout(() => logger.step({ step: '[4/6]', content: '拉取模板...' }));
   spinner.text = logger.step({ step: '[5/6]', content: '生成目标文件...' });
 
   try {
@@ -129,7 +128,7 @@ const afterRun = (templatePathRoot, spinner) => {
   fs.rmSync(templatePathRoot, { force: true, recursive: true });
 
   spinner.stop();
-  setTimeout(() => logger.stepL({ step: '[6/6]', content: '清理模板文件...' }));
+  setTimeout(() => logger.step({ step: '[6/6]', content: '清理模板文件...' }));
 };
 
 // const useLoading = async () => {
