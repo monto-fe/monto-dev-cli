@@ -1,6 +1,6 @@
 {
 	"name": "monto-dev-cli",
-	"version": "1.0.0",
+	"version": "1.0.1-0",
 	"description": "Cli tool for frontend app dev",
 	"author": "heng.du, pengfei.lv",
 	"license": "MIT",
