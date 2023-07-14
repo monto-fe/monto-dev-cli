@@ -1,20 +1,39 @@
 const path = require('path');
 const fs = require('fs');
 const Mock = require('mockjs');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const env = require('./env');
 const { checkAction, createActionMockData } = require('./utils');
+const config = require('../../lib/config');
 
 function generateApi(app, filePath) {
+  const { proxyApiUrl } = config();
   app.post('*', async (req, res) => {
     const { Action } = req.body;
     const hasAction = checkAction(Action, filePath);
     if (!hasAction) {
-      res.send(env.notFoundResponse);
+      if (proxyApiUrl) {
+        const mainProjectProxy = createProxyMiddleware({
+          target: proxyApiUrl,
+          changeOrigin: true,
+        });
+        app.use('*', mainProjectProxy);
+      } else {
+        res.send(env.notFoundResponse);
+      }
     } else {
       const file = `${filePath}/${Action}.json`;
       fs.readFile(file, 'utf-8', function (err, data) {
         if (err) {
-          res.send(env.notFoundResponse);
+          if (proxyApiUrl) {
+            const mainProjectProxy = createProxyMiddleware({
+              target: proxyApiUrl,
+              changeOrigin: true,
+            });
+            app.use('*', mainProjectProxy);
+          } else {
+            res.send(env.notFoundResponse);
+          }
         } else {
           res.send(Mock.mock(JSON.parse(data)));
         }

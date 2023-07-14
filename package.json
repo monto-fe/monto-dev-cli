@@ -23,7 +23,8 @@
 		"start": "node ./index.js",
 		"prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
 		"docs:update": "node scripts/docs.js",
-		"publish:patch": "npm version patch && npm publish --registry=https://registry.npmjs.org"
+		"publish:patch": "npm version patch && npm publish --registry=https://registry.npmjs.org",
+		"publish:major": "npm version major && npm publish --registry=https://registry.npmjs.org"
 	},
 	"dependencies": {
 		"chalk": "4",
@@ -32,10 +33,11 @@
 		"get-port": "5.1.0",
 		"inquirer": "^7.3.2",
 		"mockjs": "^1.1.0",
+		"open": "8.4.2",
 		"ora": "^5.4.1",
 		"response-time": "^2.3.2",
 		"yargs": "^13.2.4",
-		"open": "8.4.2"
+		"http-proxy-middleware": "^2.0.6"
 	},
 	"engines": {
 		"node": ">=8.10.0"

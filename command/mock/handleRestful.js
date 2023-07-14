@@ -1,9 +1,11 @@
 const Mock = require('mockjs');
 const path = require('path');
 const fs = require('fs');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const env = require('./env');
 const { checkAPIPath } = require('./utils');
+const config = require('../../lib/config');
 
 function generateApi(app, filePath) {
   app.all('*', async (req, res) => {
@@ -12,7 +14,16 @@ function generateApi(app, filePath) {
     const file = `${filePath}/${method}/${apiName}.json`;
     fs.readFile(file, 'utf-8', function (err, data) {
       if (err) {
-        res.send(env.notFoundResponse);
+        const { proxyApiUrl } = config();
+        if (proxyApiUrl) {
+          const mainProjectProxy = createProxyMiddleware({
+            target: proxyApiUrl,
+            changeOrigin: true,
+          });
+          app.use('*', mainProjectProxy);
+        } else {
+          res.send(env.notFoundResponse);
+        }
       } else {
         res.send(Mock.mock(JSON.parse(data)));
       }
