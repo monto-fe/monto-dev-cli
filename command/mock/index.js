@@ -44,7 +44,7 @@ module.exports = async function (args) {
       'Origin, X-Requested-With, Content-Type, Accept',
     );
     res.header(
-      'Access-Control-Allow-Metheds',
+      'Access-Control-Allow-Methods',
       'PUT, POST, GET, DELETE, OPTIONS',
     );
     res.header('Content-Type', 'application/json;charset=utf-8');
