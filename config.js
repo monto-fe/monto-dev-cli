@@ -1,97 +1,32 @@
-// const c = require('ansi-colors');
-
-const logger = require('./lib/logger');
-
-const callback = async (argv) => {
-  const generate = require('./command/generate');
-
-  console.log(' ');
-  console.log('================== start ==================');
-  console.log(' ');
-  logger.successL('Start to run React dev generate:');
-  console.table(buildRequestMessage(argv));
-
-  await generate(argv);
-
-  setTimeout(() => {
-    console.log(' ');
-    console.log('生成完毕! done !');
-    console.log(' ');
-    console.log('================== end ===================');
-    console.log(' ');
-  });
-};
-
-const configCallback = async (argv) => {
-  const gitHooks = require('./command/gitHooks');
-
-  // 配置 githooks，需在项目根目录下使用
-  console.log(' ');
-  console.log('================== start ==================');
-  console.log(' ');
-  logger.successL('Start to config: ' + argv.prettier);
-
-  await gitHooks(argv);
-
-  setTimeout(() => {
-    console.log(' ');
-    console.log('配置完毕! done !');
-    console.log(' ');
-    console.log('================== end ===================');
-    console.log(' ');
-  });
-};
-
-const buildRequestMessage = (argv) => {
-  const result = [];
-  if (argv.component && argv.component.length) {
-    argv.component.forEach((com) =>
-      result.push({ 名称: com, 类型: '组件', 组件类型: argv.type }),
-    );
-  }
-
-  return result;
-};
+const callback = require('./command/git-hooks');
+const templateGenerate = require('./command/template-generate');
+const mock = require('./command/mock');
 
 const commandConfigs = [
   {
-    command: ['generate', 'g'],
+    command: ['generate [type] [component]', 'g'],
     showInHelp: true,
-    description: '使用方式: dux-react-dev-cli g -c test1 test2 -t class',
-    descriptionEN: 'start to generate React element',
+    description: '生成模板组件',
+    descriptionEN: 'generate component',
     options: {
-      component: {
-        alias: 'c',
-        type: 'array',
-        // default: ['react-dev-cli-component'],
-        describe: '输入想要生成的组件名称',
-        describeEN: 'Component name you want to generate',
-      },
-      styled: {
-        alias: 's',
-        type: 'array',
-        // default: ['react-styled-wrapper'],
-        describe: '输入想要生成的样式组件名称',
-        describeEN: 'Style Component name you want to generate',
-      },
       type: {
         alias: 't',
         type: 'string',
-        default: 'function',
-        choices: ['function', 'class'],
-        describe: '类式组件还是函数式组件？',
-        describeEN: 'RFC or CFC?',
+        // demandOption: true,
+        describe: '输入想要生成的前端框架类型',
+        describeEN: 'Frame type you want to generate',
       },
-      language: {
-        alias: 'l',
-        type: 'string',
-        default: 'jsx',
-        choices: ['jsx', 'tsx'],
-        describe: 'js还是ts？',
-        describeEN: 'js or ts?',
+      conponent: {
+        alias: 'c',
+        type: 'array',
+        // demandOption: true,
+        describe: '输入想要生成的组件名称',
+        describeEN: 'Component name you want to generate',
       },
     },
-    callback: callback,
+    callback: async (argv) => {
+      templateGenerate(argv);
+    },
   },
   {
     command: ['config', 'c'],
@@ -107,7 +42,52 @@ const commandConfigs = [
         describeEN: 'Config prettier',
       },
     },
-    callback: configCallback,
+    callback: callback,
+  },
+  {
+    command: 'mock',
+    description: 'Start a local server to mock returning API data.',
+    options: {
+      type: {
+        type: 'string',
+        default: '',
+        describe: 'Choosing an API style',
+        choices: ['', 'restful', 'action'],
+      },
+      port: {
+        type: 'number',
+        default: 9000,
+        describe: 'Choosing a port number for startup',
+      },
+      timeout: {
+        alias: 't',
+        type: 'number',
+        default: 0,
+        describe: 'Setting API delay for response.',
+      },
+      customPath: {
+        type: 'string',
+        default: '',
+        describe:
+          'Mock data storage path, absolute path, default to the current CLI execution path.',
+      },
+      headers: {
+        type: 'array',
+        default: [],
+        describe: 'Please enter the custom request headers for CORS.',
+      },
+      withoutOpenBrowser: {
+        alias: 'withoutOpen',
+        type: 'boolean',
+        default: false,
+        describe: 'Open the browser',
+      },
+    },
+    callback: async (argv) => {
+      mock({
+        ...argv,
+      });
+    },
   },
 ];
 

@@ -1,0 +1,36 @@
+{
+  "get": {
+    "v1/user": {
+      "RetCode": 0,
+      "Message": "success",
+      "Data|1-9": [
+        {
+          "Id|+1": 1,
+          "UserName": "@name"
+        }
+      ]
+    },
+    "v1/user/5": {
+      "RetCode": 0,
+      "Message": "success",
+      "Data": {
+        "Id": 1,
+        "UserName": "@name"
+      }
+    }
+  },
+  "post": {
+    "v1/create": {
+      "RetCode": 0,
+      "Message": "success",
+      "Data": ""
+    }
+  },
+  "put": {
+    "v1/update/5": {
+      "RetCode": 0,
+      "Message": "success",
+      "Data": ""
+    }
+  }
+}
