@@ -6,7 +6,7 @@ module.exports = function gitHooksCallback(argv) {
   console.log(' ');
   console.log('================== start ==================');
   console.log(' ');
-  logger.success('Start to config: ' + argv.prettier);
+  logger.output.success('Start to config: ' + argv.prettier);
 
   gitHooks(argv);
 

@@ -25,7 +25,7 @@ module.exports = async function (args) {
     if (confirmPortResult) {
       port = newPort;
     }
-    logger.error(
+    logger.output.error(
       `The current port is occupied and the service cannot be started. Please close the current port and try again.`,
     );
     process.exit(0);
@@ -73,17 +73,17 @@ module.exports = async function (args) {
       handleRestful(app, customPath);
       break;
     default:
-      logger.warn(
+      logger.output.warn(
         'We only support APIs that follow the action and RESTful styles',
       );
   }
 
   const startServer = () =>
     app.listen(port, async () => {
-      logger.warn(`Mock api listening on port ${port}!`);
+      logger.output.warn(`Mock api listening on port ${port}!`);
       switch (type) {
         case 'action':
-          logger.success(
+          logger.output.success(
             `example: curl --location --request POST 'http://localhost:${port}' --header 'Content-Type: application/json' --data-raw '{ "Action": "Query" }'`,
           );
           break;
@@ -91,7 +91,7 @@ module.exports = async function (args) {
           if (!withoutOpenBrowser) {
             await open(`http://localhost:${port}/v1/user`);
           } else {
-            logger.success(
+            logger.output.success(
               `example: curl --location --request GET 'http://localhost:${port}/v1/user' --header 'Content-Type: application/json'`,
             );
           }

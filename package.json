@@ -48,7 +48,7 @@
 		"yorkie": "^2.0.0"
 	},
 	"lint-staged": {
-		"*.{js,jsx,less,md,json}": [
+		"*.{js,jsx,less}": [
 			"prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
 			"npx eslint \"**/*.{js,ts}\""
 		],
