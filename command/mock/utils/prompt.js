@@ -22,7 +22,7 @@ async function ConfirmPort(port, newPort) {
       {
         name: 'confirm',
         type: 'confirm',
-        message: logger.warn(
+        message: logger.output.warn(
           `Port ${port} is occupied, and we will enable port ${newPort}.?`,
         ),
         deafult: true,

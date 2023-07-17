@@ -3,79 +3,128 @@ const path = require('path');
 const execa = require('execa');
 const ora = require('ora');
 
+const config = require('../../lib/config');
 const logger = require('../../lib/logger');
 
-module.exports = async (argv) => {
+let spinner;
+
+function checkNodeVersion() {
+  process.stdout.write('\n');
+  spinner.start();
+  spinner.text = logger.message.step({
+    step: '[1/4]',
+    content: 'Pre-check processing...',
+  });
+
+  const requiredNodeVersion = 16;
+  const nodeVersion = process.versions.node;
+
+  // 将 nodeVersion 转换为数字
+  const currentVersion = Number(nodeVersion.split('.')[0]);
+
+  if (currentVersion < requiredNodeVersion) {
+    spinner.stop();
+    logger.output.error(
+      `Error: Node.js version must be ${requiredNodeVersion} or higher.`,
+    );
+    process.exit(1);
+  }
+
+  spinner.prefixText = logger.message.dim('[info]');
+
+  spinner.succeed();
+  logger.output.tip(`Your Node version is : ${nodeVersion}`);
+}
+
+function processParams(argv, initialValues) {
+  spinner.start();
+  spinner.text = logger.message.step({
+    step: '[2/4]',
+    content: 'Collection params...',
+  });
+
   const result = {
     ...argv,
-    dirName: 'generate-components',
     generateIndex: 0,
     rootPath: process.cwd(),
+    ...initialValues,
     getWholePath: function () {
-      return `${this.rootPath}/${this.dirName}`.split(/[\\/]/).join(path.sep);
+      return `${this.rootPath}/${this.generateDir}`
+        .split(/[\\/]/)
+        .join(path.sep);
     },
-    remoteRegistry: 'git@gitee.com:monto_1/cli-tepmlate.git',
     getTempleteRegistryUrl: function () {
-      return ['-b', `${this.type}/${this.component}`, this.remoteRegistry];
+      return [
+        '-b',
+        `${this.type}/${this.component}`,
+        this.remoteRegistry,
+        this.generateDir,
+      ];
     },
   };
 
-  const spinner = ora(
-    logger.step({ step: '[1/6]', content: '获取当前路径...' }),
-  ).start();
-
-  // 1. 操作文件夹生成
-  spinner.text = logger.step({
-    step: '[1/6]',
-    content: '在当前路径下生成模板文件夹...',
-  });
-  createFolder(result.dirName, result, spinner);
-
-  // 2. 处理参数
-  spinner.text = logger.step({ step: '[2/6]', content: '处理指令参数...' });
-  logger.tip(`模板路径：${result.getTempleteRegistryUrl()}`);
-
-  // 3. 拉取远程模板
-  spinner.text = logger.step({ step: '[3/6]', content: '拉取模板...' });
-  await getRemoteTemplate(
-    result.getTempleteRegistryUrl(),
-    result.getWholePath(),
-    spinner,
+  spinner.prefixText = logger.message.dim('[info]');
+  spinner.succeed();
+  logger.output.tip(
+    `Your template will be placed in the ${result.getWholePath()}`,
   );
-
-  // // await run(rootPath, `${templatePathRoot}${templatePathDir}`, result, spinner);
-
-  // // // 6. 收尾工作
-  // // afterRun(templatePathRoot, spinner);
-
-  spinner.text = logger.step({ step: '[5/6]', content: '模板文件处理中...' });
-  spinner.text = logger.step({ step: '[6/6]', content: '模板文件清理中...' });
-
-  logger.success('生成模板任务结束！');
-  spinner.stop();
-};
-
-function createFolder(folderName, result, index = 0) {
-  let newFolderName = folderName;
-
-  if (index > 0) {
-    newFolderName = `${folderName}_${index}`;
-  }
-  if (fs.existsSync(newFolderName)) {
-    return createFolder(folderName, result, index + 1);
-  }
-
-  result.dirName = newFolderName;
-  fs.mkdirSync(newFolderName);
-  logger.log(`创建文件夹：${newFolderName}`);
+  return result;
 }
 
-const getRemoteTemplate = async (urls, path) => {
-  try {
-    const template = await execa(`git`, ['clone', ...urls], { cwd: path });
-    return template;
-  } catch (e) {
-    logger.error(e);
-    logger.warn('该模板文件未生成 !');
+function checkFolder(dirName) {
+  spinner.start();
+  spinner.text = logger.message.step({
+    step: '[3/4]',
+    content: 'Check folder...',
+  });
+
+  if (fs.existsSync(dirName)) {
+    spinner.stop();
+    logger.output.error(`Error: The folder "${dirName}" already exists.`);
+    process.exit(1);
   }
+
+  spinner.prefixText = logger.message.dim('[info]');
+  spinner.succeed();
+}
+
+async function generateTemplete(urls) {
+  spinner.start();
+  spinner.text = logger.message.step({
+    step: '[4/4]',
+    content: 'Generate templete...',
+  });
+
+  try {
+    await execa(`git`, ['clone', ...urls], { cwd: './' });
+  } catch (e) {
+    spinner.stop();
+    logger.output.error('Template generation failed !');
+    logger.output.error(e);
+  }
+
+  spinner.prefixText = logger.message.dim('[info]');
+  spinner.succeed();
+  process.stdout.write('\n');
+}
+
+module.exports = async (argv) => {
+  const { Templete } = config();
+
+  spinner = ora();
+
+  logger.output.log('Generate start.');
+  // 1. 检查环境
+  checkNodeVersion();
+
+  // 2. 处理参数
+  const result = processParams(argv, Templete);
+
+  // 3. 文件夹检查
+  checkFolder(result.generateDir);
+
+  // 4. 拉取模板
+  await generateTemplete(result.getTempleteRegistryUrl());
+
+  logger.output.success('Template generation task completed.');
 };

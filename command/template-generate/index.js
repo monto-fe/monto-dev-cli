@@ -1,8 +1,10 @@
 const inquirer = require('inquirer');
 const generate = require('./generate');
-// const logger = require('../../lib/logger');
+const config = require('../../lib/config');
 
 module.exports = async function templateGenerate(argv) {
+  const { Templete } = config();
+
   // 判断参数：
   if (!argv.type) {
     // 没有选 type，默认从头开始选
@@ -11,9 +13,10 @@ module.exports = async function templateGenerate(argv) {
         {
           type: 'list',
           name: 'type',
-          message: '请选择想要生成的前端框架类型',
-          choices: ['react', 'vue'],
-          default: 'react',
+          message: 'Please select the framework you want: ',
+          choices: Templete.types,
+          default:
+            Templete.types && Templete.types.length ? Templete.types[0] : '',
         },
       ])
       .then((answers) => {
@@ -25,8 +28,12 @@ module.exports = async function templateGenerate(argv) {
             {
               type: 'list',
               name: 'component',
-              message: '请选择想要生成的组件名称',
-              choices: ['mui-less-v5/list/prod'],
+              message: 'Please select the component: ',
+              choices: Templete.components,
+              default:
+                Templete.components && Templete.components.length
+                  ? Templete.components[0]
+                  : '',
             },
           ])
           .then((answers) => {
@@ -46,8 +53,12 @@ module.exports = async function templateGenerate(argv) {
         {
           type: 'list',
           name: 'component',
-          message: '请选择想要生成的组件名称',
-          choices: ['mui-less-v5/list/prod'],
+          message: 'Please select the component: ',
+          choices: Templete.components || [],
+          default:
+            Templete.components && Templete.components.length
+              ? Templete.components[0]
+              : '',
         },
       ])
       .then((answers) => {

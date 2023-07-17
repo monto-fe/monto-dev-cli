@@ -27,7 +27,7 @@ function checkAction(action, filePath) {
       fileList.push(name);
     });
   } catch (err) {
-    logger.error(err.message);
+    logger.output.error(err.message);
     return false;
   }
   if (fileList.includes(action)) {
@@ -47,7 +47,7 @@ function createActionMockData(filePath) {
     });
     spinner.succeed('Generate mock data is success');
   } catch (err) {
-    logger.error(err.message);
+    logger.output.error(err.message);
     spinner.fail(`There is an error: ${err.message}`);
   }
 }
@@ -66,7 +66,7 @@ function checkAPIPath(filePath) {
     });
     spinner.succeed('Generate mock data is success');
   } catch (err) {
-    logger.error(err.message);
+    logger.output.error(err.message);
     spinner.fail(`There is an error: ${err.message}`);
   }
 }
