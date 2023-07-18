@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const ora = require('ora');
 const getPort = require('get-port');
+const bodyParser = require('body-parser');
+const env = require('../env');
 const logger = require('../../../lib/logger');
 
 function readJson(filePath) {
@@ -16,20 +18,25 @@ async function getIdlePort(defaultPort) {
   });
 }
 
-function checkAction(action, filePath) {
-  if (!action) {
-    return false;
-  }
+function getAllAction(filePath) {
   const fileList = [];
   try {
     fs.readdirSync(filePath).forEach((fileName) => {
-      const name = fileName.split('.')[0];
+      const name = fileName.substring(0, fileName.lastIndexOf('.'));
       fileList.push(name);
     });
   } catch (err) {
     logger.error(err.message);
+    return fileList;
+  }
+  return fileList;
+}
+
+function checkAction(action, filePath) {
+  if (!action) {
     return false;
   }
+  const fileList = getAllAction(filePath);
   if (fileList.includes(action)) {
     return true;
   }
@@ -71,10 +78,44 @@ function checkAPIPath(filePath) {
   }
 }
 
+function getAllAPIPath(filePath) {
+  try {
+    const apiPath = [];
+    const apiTypeDir = fs.readdirSync(filePath);
+    apiTypeDir.forEach((file) => {
+      const list = fs.readdirSync(`${filePath}/${file}`);
+      apiPath.push(...list);
+    });
+    return apiPath.map((api) => {
+      const name = `-${api.substring(0, api.lastIndexOf('.'))}`.replace(
+        /-/g,
+        '/',
+      );
+      return name;
+    });
+  } catch (err) {
+    logger.error('restful mock file is wrong');
+    return [];
+  }
+}
+
+const jsonParserPlus = bodyParser.json({
+  type: 'application/*+json',
+  limit: env.requestLimit,
+});
+const jsonParser = bodyParser.json({
+  type: 'application/json',
+  limit: env.requestLimit,
+});
+
 module.exports = {
   readJson,
   checkAction,
   createActionMockData,
   checkAPIPath,
   getIdlePort,
+  getAllAction,
+  getAllAPIPath,
+  jsonParserPlus,
+  jsonParser,
 };

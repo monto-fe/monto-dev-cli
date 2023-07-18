@@ -4,26 +4,22 @@ const fs = require('fs');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const env = require('./env');
-const { checkAPIPath } = require('./utils');
+const {
+  checkAPIPath,
+  getAllAPIPath,
+  jsonParserPlus,
+  jsonParser,
+} = require('./utils');
 const config = require('../../lib/config');
 
-function generateApi(app, filePath) {
-  app.all('*', async (req, res) => {
+function generateApi(app, filePath, apiList) {
+  app.all(apiList, jsonParser, async (req, res) => {
     const method = req.method.toLowerCase();
     const apiName = req.url.substr(1).split('/').join('-');
     const file = `${filePath}/${method}/${apiName}.json`;
     fs.readFile(file, 'utf-8', function (err, data) {
       if (err) {
-        const { proxyApiUrl } = config();
-        if (proxyApiUrl) {
-          const mainProjectProxy = createProxyMiddleware({
-            target: proxyApiUrl,
-            changeOrigin: true,
-          });
-          app.use('*', mainProjectProxy);
-        } else {
-          res.send(env.notFoundResponse);
-        }
+        res.send(env.notFoundResponse);
       } else {
         res.send(Mock.mock(JSON.parse(data)));
       }
@@ -39,6 +35,20 @@ module.exports = function handleRestful(app, customPath) {
   if (!fs.existsSync(filePath)) {
     checkAPIPath(filePath);
   }
+  const apiList = getAllAPIPath(filePath);
   // start proxy
-  generateApi(app, filePath);
+  generateApi(app, filePath, apiList);
+
+  // proxy old url
+  const { proxyApiUrl } = config();
+  if (proxyApiUrl) {
+    app.use(
+      '*',
+      jsonParserPlus,
+      createProxyMiddleware({
+        target: proxyApiUrl,
+        changeOrigin: true,
+      }),
+    );
+  }
 };

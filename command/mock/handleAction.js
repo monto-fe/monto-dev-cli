@@ -3,42 +3,25 @@ const fs = require('fs');
 const Mock = require('mockjs');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const env = require('./env');
-const { checkAction, createActionMockData } = require('./utils');
+const {
+  createActionMockData,
+  getAllAction,
+  jsonParserPlus,
+  jsonParser,
+} = require('./utils');
 const config = require('../../lib/config');
 
-function generateApi(app, filePath) {
-  const { proxyApiUrl } = config();
-  app.post('*', async (req, res) => {
+function generateApi(app, filePath, proxyKey) {
+  app.use(proxyKey, jsonParser, async (req, res) => {
     const { Action } = req.body;
-    const hasAction = checkAction(Action, filePath);
-    if (!hasAction) {
-      if (proxyApiUrl) {
-        const mainProjectProxy = createProxyMiddleware({
-          target: proxyApiUrl,
-          changeOrigin: true,
-        });
-        app.use('*', mainProjectProxy);
-      } else {
+    const file = `${filePath}/${Action}.json`;
+    fs.readFile(file, 'utf-8', function (err, data) {
+      if (err) {
         res.send(env.notFoundResponse);
+      } else {
+        res.send(Mock.mock(JSON.parse(data)));
       }
-    } else {
-      const file = `${filePath}/${Action}.json`;
-      fs.readFile(file, 'utf-8', function (err, data) {
-        if (err) {
-          if (proxyApiUrl) {
-            const mainProjectProxy = createProxyMiddleware({
-              target: proxyApiUrl,
-              changeOrigin: true,
-            });
-            app.use('*', mainProjectProxy);
-          } else {
-            res.send(env.notFoundResponse);
-          }
-        } else {
-          res.send(Mock.mock(JSON.parse(data)));
-        }
-      });
-    }
+    });
   });
 }
 
@@ -51,6 +34,21 @@ module.exports = function handleAction(app, customPath) {
   if (!fs.existsSync(filePath)) {
     createActionMockData(filePath);
   }
-  // proxy mock api
-  generateApi(app, filePath);
+
+  // get all action name
+  const allAction = getAllAction(filePath);
+  const proxyKey = allAction.map((item) => `/${item}`);
+  generateApi(app, filePath, proxyKey);
+
+  const { proxyApiUrl } = config();
+  if (proxyApiUrl) {
+    app.use(
+      '*',
+      jsonParserPlus,
+      createProxyMiddleware({
+        target: proxyApiUrl,
+        changeOrigin: true,
+      }),
+    );
+  }
 };

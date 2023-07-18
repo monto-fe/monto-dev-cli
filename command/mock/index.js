@@ -1,6 +1,5 @@
 const express = require('express');
 const responseTime = require('response-time');
-const bodyParser = require('body-parser');
 const open = require('open');
 
 const handleAction = require('./handleAction');
@@ -33,25 +32,32 @@ module.exports = async function (args) {
 
   const app = express();
 
-  app.use(bodyParser.json({ limit: env.reqestLimit }));
   app.use(express.urlencoded({ extended: true }));
   app.use(responseTime());
 
   app.all('*', (_, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept',
-    );
-    res.header(
-      'Access-Control-Allow-Methods',
-      'PUT, POST, GET, DELETE, OPTIONS',
-    );
-    res.header('Content-Type', 'application/json;charset=utf-8');
-
+    Object.keys(env.cors).forEach((key) => {
+      res.header(key, env.cors[key]);
+    });
     headers.forEach((header) => {
       const [key, value] = header.split(':');
-      res.header(key.trim(), value.trim());
+      let newValue = value;
+      switch (key.trim()) {
+        case 'Access-Control-Allow-Headers':
+          newValue = `${
+            env.cors['Access-Control-Allow-Headers']
+          }, ${value.trim()}`;
+          break;
+        case 'Access-Control-Allow-Methods':
+          newValue = `${
+            env.cors['Access-Control-Allow-Methods']
+          }, ${value.trim()}`;
+          break;
+        case 'Content-Type':
+          newValue = value.trim();
+          break;
+      }
+      res.header(key.trim(), newValue);
     });
 
     setTimeout(() => {
@@ -73,9 +79,10 @@ module.exports = async function (args) {
       handleRestful(app, customPath);
       break;
     default:
-      logger.warn(
+      logger.error(
         'We only support APIs that follow the action and RESTful styles',
       );
+      process.exit(0);
   }
 
   const startServer = () =>
