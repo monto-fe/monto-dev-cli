@@ -40,7 +40,9 @@ module.exports = function handleRestful(app, customPath) {
   generateApi(app, filePath, apiList);
 
   // proxy old url
-  const { proxyApiUrl } = config();
+  const {
+    mock: { proxyApiUrl },
+  } = config();
   if (proxyApiUrl) {
     app.use(
       '*',

@@ -40,7 +40,9 @@ module.exports = function handleAction(app, customPath) {
   const proxyKey = allAction.map((item) => `/${item}`);
   generateApi(app, filePath, proxyKey);
 
-  const { proxyApiUrl } = config();
+  const {
+    mock: { proxyApiUrl },
+  } = config();
   if (proxyApiUrl) {
     app.use(
       '*',
