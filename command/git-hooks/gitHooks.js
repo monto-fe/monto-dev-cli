@@ -18,11 +18,11 @@ const configPrettier = async () => {
   const spinner = ora('Loading...').start();
   // 2. 读取 package.json
   if (!dataPackage) {
-    logger.warn('项目根目录下 package.json 文件不存在!');
+    logger.output.warn('项目根目录下 package.json 文件不存在!');
   }
 
   if (dataPackage.gitHooks) {
-    logger.warn('package.json 已经配置了 gitHooks!');
+    logger.output.warn('package.json 已经配置了 gitHooks!');
   } else {
     Object.assign(dataPackage, {
       gitHooks: {
@@ -48,19 +48,22 @@ const configPrettier = async () => {
       },
     });
   } else {
-    logger.warn('package.json 已经配置了 lint-staged!');
+    logger.output.warn('package.json 已经配置了 lint-staged!');
   }
 
-  logger.step({ step: '[1/2]', content: '写入 package.json...' });
-  spinner.text = logger.step({
+  logger.output.step({ step: '[1/2]', content: '写入 package.json...' });
+  spinner.text = logger.output.step({
     step: '[1/2]',
     content: '写入 package.json...',
   });
 
   fs.writeFileSync(`package.json`, JSON.stringify(dataPackage, null, '\t'));
 
-  logger.step({ step: '[2/2]', content: '安装依赖中...' });
-  spinner.text = logger.step({ step: '[2/2]', content: '安装依赖中...' });
+  logger.output.step({ step: '[2/2]', content: '安装依赖中...' });
+  spinner.text = logger.output.step({
+    step: '[2/2]',
+    content: '安装依赖中...',
+  });
 
   childProcess.execSync(
     'yarn add -D lint-staged prettier yorkie',

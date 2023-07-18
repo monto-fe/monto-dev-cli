@@ -4,43 +4,29 @@ const mock = require('./command/mock');
 
 const commandConfigs = [
   {
-    command: ['generate', 'g'],
+    command: ['generate [type] [component]', 'g'],
     showInHelp: true,
-    description: '使用方式: dux-react-dev-cli g -c test1 test2 -t class',
-    descriptionEN: 'start to generate React element',
+    description: '生成模板组件',
+    descriptionEN: 'generate component',
     options: {
-      component: {
-        alias: 'c',
-        type: 'array',
-        // default: ['react-dev-cli-component'],
-        describe: '输入想要生成的组件名称',
-        describeEN: 'Component name you want to generate',
-      },
-      styled: {
-        alias: 's',
-        type: 'array',
-        // default: ['react-styled-wrapper'],
-        describe: '输入想要生成的样式组件名称',
-        describeEN: 'Style Component name you want to generate',
-      },
       type: {
         alias: 't',
         type: 'string',
-        default: 'function',
-        choices: ['function', 'class'],
-        describe: '类式组件还是函数式组件？',
-        describeEN: 'RFC or CFC?',
+        // demandOption: true,
+        describe: '输入想要生成的前端框架类型',
+        describeEN: 'Frame type you want to generate',
       },
-      language: {
-        alias: 'l',
-        type: 'string',
-        default: 'jsx',
-        choices: ['jsx', 'tsx'],
-        describe: 'js还是ts？',
-        describeEN: 'js or ts?',
+      conponent: {
+        alias: 'c',
+        type: 'array',
+        // demandOption: true,
+        describe: '输入想要生成的组件名称',
+        describeEN: 'Component name you want to generate',
       },
     },
-    callback: callback,
+    callback: async (argv) => {
+      templateGenerate(argv);
+    },
   },
   {
     command: ['config', 'c'],
@@ -56,7 +42,7 @@ const commandConfigs = [
         describeEN: 'Config prettier',
       },
     },
-    callback: templateGenerate,
+    callback: callback,
   },
   {
     command: 'mock',

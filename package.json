@@ -1,6 +1,6 @@
 {
 	"name": "monto-dev-cli",
-	"version": "0.0.5",
+	"version": "0.0.8",
 	"description": "Cli tool for frontend app dev",
 	"author": "heng.du, pengfei.lv",
 	"license": "MIT",
@@ -48,7 +48,7 @@
 		"yorkie": "^2.0.0"
 	},
 	"lint-staged": {
-		"*.{js,jsx,less,md,json}": [
+		"*.{js,jsx,less}": [
 			"prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
 			"npx eslint \"**/*.{js,ts}\""
 		],

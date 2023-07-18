@@ -1,31 +1,71 @@
+const inquirer = require('inquirer');
 const generate = require('./generate');
-const logger = require('../../lib/logger');
+const config = require('../../lib/config');
 
-const buildRequestMessage = (argv) => {
-  const result = [];
-  if (argv.component && argv.component.length) {
-    argv.component.forEach((com) =>
-      result.push({ 名称: com, 类型: '组件', 组件类型: argv.type }),
-    );
+module.exports = async function templateGenerate(argv) {
+  const { Templete } = config();
+
+  // 判断参数：
+  if (!argv.type) {
+    // 没有选 type，默认从头开始选
+    inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'type',
+          message: 'Please select the framework you want: ',
+          choices: Templete.types,
+          default:
+            Templete.types && Templete.types.length ? Templete.types[0] : '',
+        },
+      ])
+      .then((answers) => {
+        // 使用用户选择的值
+        argv.type = answers.type;
+
+        inquirer
+          .prompt([
+            {
+              type: 'list',
+              name: 'component',
+              message: 'Please select the component: ',
+              choices: Templete.components,
+              default:
+                Templete.components && Templete.components.length
+                  ? Templete.components[0]
+                  : '',
+            },
+          ])
+          .then((answers) => {
+            // 使用用户选择的值
+            argv.component = answers.component;
+
+            generate(argv);
+          });
+      });
+    return;
   }
 
-  return result;
-};
+  if (!argv.component) {
+    // 选了 type，没有选 component
+    inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'component',
+          message: 'Please select the component: ',
+          choices: Templete.components || [],
+          default:
+            Templete.components && Templete.components.length
+              ? Templete.components[0]
+              : '',
+        },
+      ])
+      .then((answers) => {
+        // 使用用户选择的值
+        argv.component = answers.component;
 
-module.exports = function templateGenerate(argv) {
-  console.log(' ');
-  console.log('================== start ==================');
-  console.log(' ');
-  logger.success('Start to run React dev generate:');
-  console.table(buildRequestMessage(argv));
-
-  generate(argv);
-
-  setTimeout(() => {
-    console.log(' ');
-    console.log('生成完毕! done !');
-    console.log(' ');
-    console.log('================== end ===================');
-    console.log(' ');
-  });
+        generate(argv);
+      });
+  }
 };

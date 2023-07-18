@@ -5,12 +5,17 @@ const yargs = require('yargs');
 
 const config = require('./config');
 
+// const logger = require('./lib/logger');
+
+yargs.scriptName('monto-dev-cli');
+
 yargs.usage(`
-$0 <cmd> [args]
+用法：$0 <cmd> [args]
 `);
 
 config.forEach((commandConfig) => {
   const { command, description, options, callback } = commandConfig;
+
   yargs.command(
     command,
     description,
@@ -22,4 +27,4 @@ config.forEach((commandConfig) => {
   );
 });
 
-yargs.demandCommand().strict().argv;
+yargs.demandCommand().help().strict().argv;

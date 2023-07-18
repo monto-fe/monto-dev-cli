@@ -8,6 +8,6 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
   },
-  ignorePatterns: ['mock/*', '*.json'],
+  ignorePatterns: ['mock/*', '*.md', '*.json'],
   rules: {},
 };
