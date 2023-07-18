@@ -10,6 +10,7 @@ const {
   jsonParser,
 } = require('./utils');
 const config = require('../../lib/config');
+const logger = require('../../lib/logger');
 
 function generateApi(app, filePath, proxyKey) {
   app.use(proxyKey, jsonParser, async (req, res) => {
@@ -19,7 +20,13 @@ function generateApi(app, filePath, proxyKey) {
       if (err) {
         res.send(env.notFoundResponse);
       } else {
-        res.send(Mock.mock(JSON.parse(data)));
+        let result = {};
+        try {
+          result = Mock.mock(JSON.parse(data));
+        } catch (err) {
+          logger.error('json file is error', err.message);
+        }
+        res.send(result);
       }
     });
   });
