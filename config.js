@@ -65,7 +65,7 @@ const commandConfigs = [
         default: 0,
         describe: 'Setting API delay for response.',
       },
-      customPath: {
+      mockPath: {
         type: 'string',
         default: '',
         describe:
