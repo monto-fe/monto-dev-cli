@@ -12,10 +12,9 @@ const { HandleSelectApiStyle, ConfirmPort } = require('./utils/prompt');
 
 module.exports = async function (args) {
   const { mock } = config();
-  const { type: customType } = mock;
+  const { type: customType, headers: customHeaders } = mock;
 
-  let { timeout, headers, mockPath, withoutOpenBrowser } = args;
-  let { type, port } = args;
+  let { type, port, timeout, headers, mockPath, withoutOpenBrowser } = args;
 
   if (!type && customType) {
     type = customType;
@@ -42,6 +41,9 @@ module.exports = async function (args) {
   app.use(express.urlencoded({ extended: true }));
   app.use(responseTime());
 
+  if (customHeaders) {
+    headers = [customHeaders];
+  }
   app.all('*', (_, res, next) => {
     Object.keys(env.cors).forEach((key) => {
       res.header(key, env.cors[key]);
