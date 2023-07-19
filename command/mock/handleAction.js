@@ -32,9 +32,9 @@ function generateApi(app, filePath, proxyKey) {
   });
 }
 
-module.exports = function handleAction(app, customPath) {
-  const filePath = customPath
-    ? customPath
+module.exports = function handleAction(app, mockPath) {
+  const filePath = mockPath
+    ? mockPath
     : path.resolve(process.cwd(), env.mockPath.action);
 
   // Mock data does not exist, automatically creating it.

@@ -7,13 +7,18 @@ const handleRestful = require('./handleRestful');
 const env = require('./env');
 const logger = require('../../lib/logger');
 const { getIdlePort } = require('./utils');
+const config = require('../../lib/config');
 const { HandleSelectApiStyle, ConfirmPort } = require('./utils/prompt');
 
 module.exports = async function (args) {
-  const { timeout, headers, customPath, withoutOpenBrowser } = args;
-  let { type, port } = args;
+  const { mock } = config();
+  const { type: customType, headers: customHeaders } = mock;
 
-  if (!type) {
+  let { type, port, timeout, headers, mockPath, withoutOpenBrowser } = args;
+
+  if (!type && customType) {
+    type = customType;
+  } else if (!type) {
     type = await HandleSelectApiStyle();
   }
 
@@ -23,11 +28,12 @@ module.exports = async function (args) {
     confirmPortResult = await ConfirmPort(port, newPort);
     if (confirmPortResult) {
       port = newPort;
+    } else {
+      logger.output.error(
+        `The current port is occupied and the service cannot be started. Please close the current port and try again.`,
+      );
+      process.exit(0);
     }
-    logger.output.error(
-      `The current port is occupied and the service cannot be started. Please close the current port and try again.`,
-    );
-    process.exit(0);
   }
 
   const app = express();
@@ -35,6 +41,9 @@ module.exports = async function (args) {
   app.use(express.urlencoded({ extended: true }));
   app.use(responseTime());
 
+  if (customHeaders) {
+    headers = [customHeaders];
+  }
   app.all('*', (_, res, next) => {
     Object.keys(env.cors).forEach((key) => {
       res.header(key, env.cors[key]);
@@ -73,10 +82,10 @@ module.exports = async function (args) {
 
   switch (type) {
     case 'action':
-      handleAction(app, customPath);
+      handleAction(app, mockPath);
       break;
     case 'restful':
-      handleRestful(app, customPath);
+      handleRestful(app, mockPath);
       break;
     default:
       logger.output.warn(

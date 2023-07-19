@@ -34,9 +34,9 @@ function generateApi(app, filePath, apiList) {
   });
 }
 
-module.exports = function handleRestful(app, customPath) {
-  const filePath = customPath
-    ? customPath
+module.exports = function handleRestful(app, mockPath) {
+  const filePath = mockPath
+    ? mockPath
     : path.resolve(process.cwd(), env.mockPath.restful);
   // Mock data does not exist, automatically creating it.
   if (!fs.existsSync(filePath)) {
