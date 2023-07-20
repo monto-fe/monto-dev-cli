@@ -1,71 +1,79 @@
+const yargs = require('yargs');
 const inquirer = require('inquirer');
+const Rx = require('rxjs');
+
 const generate = require('./generate');
 const config = require('../../lib/config');
+const logger = require('../../lib/logger');
 
 module.exports = async function templateGenerate(argv) {
-  const { Templete } = config();
+  const { template } = config();
+  const { types, components } = { ...template };
 
-  // 判断参数：
-  if (!argv.type) {
-    // 没有选 type，默认从头开始选
-    inquirer
-      .prompt([
-        {
-          type: 'list',
-          name: 'type',
-          message: 'Please select the framework you want: ',
-          choices: Templete.types,
-          default:
-            Templete.types && Templete.types.length ? Templete.types[0] : '',
-        },
-      ])
-      .then((answers) => {
-        // 使用用户选择的值
-        argv.type = answers.type;
-
-        inquirer
-          .prompt([
-            {
-              type: 'list',
-              name: 'component',
-              message: 'Please select the component: ',
-              choices: Templete.components,
-              default:
-                Templete.components && Templete.components.length
-                  ? Templete.components[0]
-                  : '',
-            },
-          ])
-          .then((answers) => {
-            // 使用用户选择的值
-            argv.component = answers.component;
-
-            generate(argv);
-          });
-      });
+  // 指令参数可用
+  if (argv.type && argv.component) {
+    generate({
+      ...template,
+      ...argv,
+    });
     return;
   }
 
-  if (!argv.component) {
-    // 选了 type，没有选 component
-    inquirer
-      .prompt([
-        {
-          type: 'list',
-          name: 'component',
-          message: 'Please select the component: ',
-          choices: Templete.components || [],
-          default:
-            Templete.components && Templete.components.length
-              ? Templete.components[0]
-              : '',
-        },
-      ])
-      .then((answers) => {
-        // 使用用户选择的值
-        argv.component = answers.component;
+  if (
+    !template ||
+    !Array.isArray(types) ||
+    !components ||
+    !(components instanceof Object && !Array.isArray(components)) ||
+    !types.length ||
+    !Object.keys(components).length
+  ) {
+    logger.output.warn('No template available, please check your config ~');
 
-        generate(argv);
-      });
+    process.stdout.write('\n');
+    yargs.showHelp();
+    process.exit(0);
   }
+
+  const prompts = new Rx.Subject();
+
+  async function handleSelect(result) {
+    if (result.name === 'type') {
+      argv.type = result.answer;
+      prompts.next({
+        name: 'component',
+        type: 'list',
+        message: 'Please select the component: ',
+        choices: components[argv.type],
+      });
+    }
+
+    if (result.name === 'component') {
+      argv.component = result.answer;
+
+      await generate({
+        ...template,
+        ...argv,
+      });
+
+      prompts.complete();
+    }
+  }
+
+  inquirer.prompt(prompts).ui.process.subscribe(
+    async (result) => handleSelect(result),
+    () => {
+      logger.output.error(
+        'Incorrect configuration for parameter types or components, please check! ',
+      );
+      process.exit(1);
+    },
+    () => {},
+  );
+
+  prompts.next({
+    name: 'type',
+    type: 'list',
+    message: 'Please select the framework you want: ',
+    choices: types,
+  });
 };

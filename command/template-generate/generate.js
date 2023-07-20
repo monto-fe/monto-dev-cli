@@ -3,7 +3,6 @@ const path = require('path');
 const execa = require('execa');
 const ora = require('ora');
 
-const config = require('../../lib/config');
 const logger = require('../../lib/logger');
 
 let spinner;
@@ -36,7 +35,13 @@ function checkNodeVersion() {
   logger.output.tip(`Your Node version is : ${nodeVersion}`);
 }
 
-function processParams(argv, initialValues) {
+function processParams(
+  type,
+  component,
+  rootPath,
+  generateDirectory,
+  remoteRegistry,
+) {
   spinner.start();
   spinner.text = logger.message.step({
     step: '[2/4]',
@@ -44,43 +49,32 @@ function processParams(argv, initialValues) {
   });
 
   const result = {
-    ...argv,
-    generateIndex: 0,
-    rootPath: process.cwd(),
-    ...initialValues,
-    getWholePath: function () {
-      return `${this.rootPath}/${this.generateDir}`
-        .split(/[\\/]/)
-        .join(path.sep);
-    },
-    getTempleteRegistryUrl: function () {
-      return [
-        '-b',
-        `${this.type}/${this.component}`,
-        this.remoteRegistry,
-        this.generateDir,
-      ];
-    },
+    templeteRegistryUrls: [
+      '-b',
+      `${type}/${component}`,
+      remoteRegistry,
+      generateDirectory,
+    ],
+    wholePath: path.resolve(rootPath, generateDirectory),
   };
 
   spinner.prefixText = logger.message.dim('[info]');
   spinner.succeed();
-  logger.output.tip(
-    `Your template will be placed in the ${result.getWholePath()}`,
-  );
+  logger.output.tip(`Your template will be placed in the ${result.wholePath}`);
+
   return result;
 }
 
-function checkFolder(dirName) {
+function checkFolder(dirPath) {
   spinner.start();
   spinner.text = logger.message.step({
     step: '[3/4]',
     content: 'Check folder...',
   });
 
-  if (fs.existsSync(dirName)) {
+  if (fs.existsSync(dirPath)) {
     spinner.stop();
-    logger.output.error(`Error: The folder "${dirName}" already exists.`);
+    logger.output.error(`Error: The folder "${dirPath}" already exists.`);
     process.exit(1);
   }
 
@@ -88,7 +82,7 @@ function checkFolder(dirName) {
   spinner.succeed();
 }
 
-async function generateTemplete(urls) {
+async function generateTemplete(urls, path) {
   spinner.start();
   spinner.text = logger.message.step({
     step: '[4/4]',
@@ -96,7 +90,7 @@ async function generateTemplete(urls) {
   });
 
   try {
-    await execa(`git`, ['clone', ...urls], { cwd: './' });
+    await execa(`git`, ['clone', ...urls], { cwd: path });
   } catch (e) {
     spinner.stop();
     logger.output.error('Template generation failed !');
@@ -109,8 +103,7 @@ async function generateTemplete(urls) {
 }
 
 module.exports = async (argv) => {
-  const { Templete } = config();
-
+  const { type, component, rootPath, generateDirectory, remoteRegistry } = argv;
   spinner = ora();
 
   logger.output.log('Generate start.');
@@ -118,13 +111,19 @@ module.exports = async (argv) => {
   checkNodeVersion();
 
   // 2. 处理参数
-  const result = processParams(argv, Templete);
+  const params = processParams(
+    type,
+    component,
+    rootPath,
+    generateDirectory,
+    remoteRegistry,
+  );
 
   // 3. 文件夹检查
-  checkFolder(result.generateDir);
+  checkFolder(params.wholePath);
 
   // 4. 拉取模板
-  await generateTemplete(result.getTempleteRegistryUrl());
+  await generateTemplete(params.templeteRegistryUrls, rootPath);
 
   logger.output.success('Template generation task completed.');
 };

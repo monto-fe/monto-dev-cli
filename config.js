@@ -16,9 +16,9 @@ const commandConfigs = [
         describe: '输入想要生成的前端框架类型',
         describeEN: 'Frame type you want to generate',
       },
-      conponent: {
+      component: {
         alias: 'c',
-        type: 'array',
+        type: 'string',
         // demandOption: true,
         describe: '输入想要生成的组件名称',
         describeEN: 'Component name you want to generate',
