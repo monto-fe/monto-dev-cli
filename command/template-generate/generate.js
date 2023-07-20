@@ -55,7 +55,7 @@ function processParams(
       remoteRegistry,
       generateDirectory,
     ],
-    wholePath: `${rootPath}/${generateDirectory}`.split(/[\\/]/).join(path.sep),
+    wholePath: path.resolve(rootPath, generateDirectory),
   };
 
   spinner.prefixText = logger.message.dim('[info]');
