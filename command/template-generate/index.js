@@ -1,10 +1,13 @@
 const yargs = require('yargs');
 const inquirer = require('inquirer');
 const Rx = require('rxjs');
+const autocomplete = require('inquirer-autocomplete-prompt');
 
 const generate = require('./generate');
 const config = require('../../lib/config');
 const logger = require('../../lib/logger');
+
+inquirer.registerPrompt('autocomplete', autocomplete);
 
 module.exports = async function templateGenerate(argv) {
   const { template } = config();
@@ -34,6 +37,16 @@ module.exports = async function templateGenerate(argv) {
     process.exit(0);
   }
 
+  const searchOptions = (options) => (answers, input) => {
+    input = input || '';
+    return new Promise((resolve) => {
+      const filteredOptions = options.filter((option) =>
+        option.toLowerCase().includes(input.toLowerCase()),
+      );
+      resolve(filteredOptions);
+    });
+  };
+
   const prompts = new Rx.Subject();
 
   async function handleSelect(result) {
@@ -41,9 +54,9 @@ module.exports = async function templateGenerate(argv) {
       argv.type = result.answer;
       prompts.next({
         name: 'component',
-        type: 'list',
+        type: 'autocomplete',
         message: 'Please select the component: ',
-        choices: components[argv.type],
+        source: searchOptions(components[argv.type]),
       });
     }
 
@@ -72,8 +85,8 @@ module.exports = async function templateGenerate(argv) {
 
   prompts.next({
     name: 'type',
-    type: 'list',
+    type: 'autocomplete',
     message: 'Please select the framework you want: ',
-    choices: types,
+    source: searchOptions(types),
   });
 };
