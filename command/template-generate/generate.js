@@ -38,8 +38,7 @@ function checkNodeVersion() {
 function processParams(
   type,
   component,
-  rootPath,
-  generateDirectory,
+  normalizedDirectoryPath,
   remoteRegistry,
 ) {
   spinner.start();
@@ -53,9 +52,9 @@ function processParams(
       '-b',
       `${type}/${component}`,
       remoteRegistry,
-      generateDirectory,
+      normalizedDirectoryPath,
     ],
-    wholePath: path.resolve(rootPath, generateDirectory),
+    wholePath: normalizedDirectoryPath,
   };
 
   spinner.prefixText = logger.message.dim('[info]');
@@ -82,7 +81,7 @@ function checkFolder(dirPath) {
   spinner.succeed();
 }
 
-async function generateTemplete(urls, path) {
+async function generateTemplete(urls) {
   spinner.start();
   spinner.text = logger.message.step({
     step: '[4/4]',
@@ -90,7 +89,7 @@ async function generateTemplete(urls, path) {
   });
 
   try {
-    await execa(`git`, ['clone', ...urls], { cwd: path });
+    await execa(`git`, ['clone', ...urls]);
   } catch (e) {
     spinner.stop();
     logger.output.error('Template generation failed !');
@@ -103,10 +102,16 @@ async function generateTemplete(urls, path) {
 }
 
 module.exports = async (argv) => {
-  const { type, component, rootPath, generateDirectory, remoteRegistry } = argv;
+  const { type, component, generateDirectory, remoteRegistry } = argv;
   spinner = ora();
 
+  // 处理配置文件的放置目录
+  const normalizedDirectoryPath = path.resolve(
+    path.normalize(generateDirectory).replace(/\\/g, '/'),
+  );
+
   logger.output.log('Generate start.');
+
   // 1. 检查环境
   checkNodeVersion();
 
@@ -114,8 +119,7 @@ module.exports = async (argv) => {
   const params = processParams(
     type,
     component,
-    rootPath,
-    generateDirectory,
+    normalizedDirectoryPath,
     remoteRegistry,
   );
 
@@ -123,7 +127,7 @@ module.exports = async (argv) => {
   checkFolder(params.wholePath);
 
   // 4. 拉取模板
-  await generateTemplete(params.templeteRegistryUrls, rootPath);
+  await generateTemplete(params.templeteRegistryUrls);
 
   logger.output.success('Template generation task completed.');
 };
