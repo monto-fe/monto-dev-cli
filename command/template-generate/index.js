@@ -15,7 +15,7 @@ module.exports = async function templateGenerate(argv) {
 
   // 指令参数可用
   if (argv.type && argv.component) {
-    generate({
+    await generate({
       ...template,
       ...argv,
     });

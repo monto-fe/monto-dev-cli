@@ -4,7 +4,7 @@ const mock = require('./command/mock');
 
 const commandConfigs = [
   {
-    command: ['generate [type] [component]', 'g'],
+    command: ['generate', 'g'],
     showInHelp: true,
     description: '生成模板组件',
     descriptionEN: 'generate component',

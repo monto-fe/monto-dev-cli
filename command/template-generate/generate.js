@@ -22,7 +22,7 @@ function checkNodeVersion() {
   const currentVersion = Number(nodeVersion.split('.')[0]);
 
   if (currentVersion < requiredNodeVersion) {
-    spinner.stop();
+    spinner.fail();
     logger.output.error(
       `Error: Node.js version must be ${requiredNodeVersion} or higher.`,
     );
@@ -72,7 +72,7 @@ function checkFolder(dirPath) {
   });
 
   if (fs.existsSync(dirPath)) {
-    spinner.stop();
+    spinner.fail();
     logger.output.error(`Error: The folder "${dirPath}" already exists.`);
     process.exit(1);
   }
@@ -91,7 +91,7 @@ async function generateTemplete(urls) {
   try {
     await execa(`git`, ['clone', ...urls]);
   } catch (e) {
-    spinner.stop();
+    spinner.fail();
     logger.output.error('Template generation failed !');
     logger.output.error(e);
   }
