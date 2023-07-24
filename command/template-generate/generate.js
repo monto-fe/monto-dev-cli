@@ -15,7 +15,7 @@ function checkNodeVersion() {
     content: 'Pre-check processing...',
   });
 
-  const requiredNodeVersion = 16;
+  const requiredNodeVersion = 12;
   const nodeVersion = process.versions.node;
 
   // 将 nodeVersion 转换为数字
@@ -33,7 +33,6 @@ function checkNodeVersion() {
 
   spinner.succeed();
   logger.output.tip(`Your Node version is : ${nodeVersion}`);
-  process.stdout.write('\n');
 }
 
 function processParams(
@@ -60,8 +59,7 @@ function processParams(
 
   spinner.prefixText = logger.message.dim('[info]');
   spinner.succeed();
-  logger.output.tip(`Your template will be placed in the ${result.wholePath}`);
-  process.stdout.write('\n');
+  logger.output.tip('Parameters collected successfully.');
 
   return result;
 }
@@ -81,6 +79,7 @@ function checkFolder(dirPath) {
 
   spinner.prefixText = logger.message.dim('[info]');
   spinner.succeed();
+  logger.output.tip(`Your template will be placed in the ${dirPath}`);
 }
 
 async function generateTemplete(urls) {
@@ -94,8 +93,12 @@ async function generateTemplete(urls) {
     await execa(`git`, ['clone', ...urls]);
   } catch (e) {
     spinner.fail();
-    logger.output.error('Template generation failed !');
-    logger.output.error(e);
+    logger.output.error(
+      'Template generation failed! Template does not exist or remote repository is unavailable.',
+    );
+    logger.output.log(`Your template is [${urls[2]}, ${urls[1]}]`);
+    process.stdout.write('\n');
+    process.exit(1);
   }
 
   spinner.prefixText = logger.message.dim('[info]');
@@ -103,7 +106,7 @@ async function generateTemplete(urls) {
   process.stdout.write('\n');
 }
 
-module.exports = async (argv) => {
+module.exports = async function generate(argv) {
   const { type, component, generateDirectory, remoteRegistry } = argv;
   spinner = ora();
 

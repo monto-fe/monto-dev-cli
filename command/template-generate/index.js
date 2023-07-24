@@ -53,9 +53,7 @@ module.exports = async function templateGenerate(argv) {
         type: 'autocomplete',
         message: 'Please select the component: ',
         source: searchOptions(components[type]),
-        when: function (answers) {
-          return answers.type === type;
-        },
+        when: (answers) => answers.type === type,
       };
     });
   };
@@ -64,13 +62,13 @@ module.exports = async function templateGenerate(argv) {
     {
       name: 'type',
       type: 'autocomplete',
-      message: 'Please select the framework you want: ',
+      message: 'Please select the framework: ',
       source: searchOptions(types),
     },
     ...getComponentOptions(),
   ];
 
-  inquirer.prompt(questions).then(async (answers) => {
+  await inquirer.prompt(questions).then(async (answers) => {
     await generate({
       ...template,
       ...answers,
