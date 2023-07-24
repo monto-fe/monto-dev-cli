@@ -43,13 +43,17 @@ module.exports = function handleAction(app, mockPath) {
   }
 
   // get all action name
-  const allAction = getAllAction(filePath);
-  const proxyKey = allAction.map((item) => `/${item}`);
-  generateApi(app, filePath, proxyKey);
-
   const {
     mock: { proxyApiUrl },
   } = config();
+  let proxyKey = '*';
+
+  if (proxyApiUrl) {
+    const allAction = getAllAction(filePath);
+    proxyKey = allAction.map((item) => `/${item}`);
+  }
+  generateApi(app, filePath, proxyKey);
+
   if (proxyApiUrl) {
     app.use(
       '*',
