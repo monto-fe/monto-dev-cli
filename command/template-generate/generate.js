@@ -33,6 +33,7 @@ function checkNodeVersion() {
 
   spinner.succeed();
   logger.output.tip(`Your Node version is : ${nodeVersion}`);
+  process.stdout.write('\n');
 }
 
 function processParams(
@@ -60,6 +61,7 @@ function processParams(
   spinner.prefixText = logger.message.dim('[info]');
   spinner.succeed();
   logger.output.tip(`Your template will be placed in the ${result.wholePath}`);
+  process.stdout.write('\n');
 
   return result;
 }
