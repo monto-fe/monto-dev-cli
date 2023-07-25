@@ -1,6 +1,5 @@
 const yargs = require('yargs');
 const inquirer = require('inquirer');
-const Rx = require('rxjs');
 const autocomplete = require('inquirer-autocomplete-prompt');
 
 const generate = require('./generate');
@@ -15,7 +14,7 @@ module.exports = async function templateGenerate(argv) {
 
   // 指令参数可用
   if (argv.type && argv.component) {
-    generate({
+    await generate({
       ...template,
       ...argv,
     });
@@ -40,53 +39,39 @@ module.exports = async function templateGenerate(argv) {
   const searchOptions = (options) => (answers, input) => {
     input = input || '';
     return new Promise((resolve) => {
-      const filteredOptions = options.filter((option) =>
+      const filteredOptions = (options || []).filter((option) =>
         option.toLowerCase().includes(input.toLowerCase()),
       );
       resolve(filteredOptions);
     });
   };
 
-  const prompts = new Rx.Subject();
-
-  async function handleSelect(result) {
-    if (result.name === 'type') {
-      argv.type = result.answer;
-      prompts.next({
+  const getComponentOptions = () => {
+    return types.map((type) => {
+      return {
         name: 'component',
         type: 'autocomplete',
         message: 'Please select the component: ',
-        source: searchOptions(components[argv.type]),
-      });
-    }
+        source: searchOptions(components[type]),
+        when: (answers) => answers.type === type,
+      };
+    });
+  };
 
-    if (result.name === 'component') {
-      argv.component = result.answer;
-
-      await generate({
-        ...template,
-        ...argv,
-      });
-
-      prompts.complete();
-    }
-  }
-
-  inquirer.prompt(prompts).ui.process.subscribe(
-    async (result) => handleSelect(result),
-    () => {
-      logger.output.error(
-        'Incorrect configuration for parameter types or components, please check! ',
-      );
-      process.exit(1);
+  const questions = [
+    {
+      name: 'type',
+      type: 'autocomplete',
+      message: 'Please select the framework: ',
+      source: searchOptions(types),
     },
-    () => {},
-  );
+    ...getComponentOptions(),
+  ];
 
-  prompts.next({
-    name: 'type',
-    type: 'autocomplete',
-    message: 'Please select the framework you want: ',
-    source: searchOptions(types),
+  await inquirer.prompt(questions).then(async (answers) => {
+    await generate({
+      ...template,
+      ...answers,
+    });
   });
 };
