@@ -1,9 +1,9 @@
 const fs = require('fs');
 const ora = require('ora');
-const childProcess = require('child_process');
 const yargs = require('yargs');
 
 const logger = require('../../lib/logger');
+const { execProcess } = require('../../util');
 const dataPackage = require('../../package.json');
 
 module.exports = async (argv) => {
@@ -73,6 +73,7 @@ const configPrettier = async () => {
     process.exit(1);
   }
 
+  spinner.prefixText = logger.message.dim('[info]');
   spinner.succeed();
   warnTip.forEach((warn) => logger.output.warn(warn));
 
@@ -82,16 +83,14 @@ const configPrettier = async () => {
   });
   spinner.start();
 
-  await childProcess.exec(
-    'yarn add -D lint-staged prettier yorkie',
-    (_error, _stdout, stderr) => {
-      if (stderr) {
-        spinner.fail();
-        logger.output.error(stderr);
-        process.exit(1);
-      }
-    },
-  );
+  await execProcess('yarnd add -D lint-staged prettier yorkie').catch((e) => {
+    if (e) {
+      spinner.fail();
+      logger.output.error(e);
+      process.exit(1);
+    }
+  });
 
+  spinner.prefixText = logger.message.dim('[info]');
   spinner.succeed();
 };

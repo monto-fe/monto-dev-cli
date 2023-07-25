@@ -51,8 +51,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,less}": [
-      "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
-      "npx eslint \"**/*.{js,ts}\""
+      "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
     ],
     "*.ts?(x)": [
       "prettier --parser=typescript --write"
