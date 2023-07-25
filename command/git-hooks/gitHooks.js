@@ -20,13 +20,15 @@ module.exports = async (argv) => {
 const configPrettier = async () => {
   const warnTip = [];
 
-  const spinner = ora().start();
+  const spinner = ora();
   spinner.text = logger.message.step({
     step: '[1/2]',
     content: 'Writing package.json...',
   });
+  spinner.start();
   // 2. 读取 package.json
   if (!dataPackage) {
+    spinner.fail();
     logger.output.error('package.json file not found! ');
     process.exit(1);
   }
@@ -62,8 +64,9 @@ const configPrettier = async () => {
   }
 
   try {
-    fs.writeFileSync(`package.json`, JSON.stringify(dataPackage, null, '\t'));
+    fs.writeFileSync(`package.json`, JSON.stringify(dataPackage, null, 2));
   } catch {
+    spinner.fail();
     logger.output.error(
       'Config failed! Failed to write to package.json file. Please check file permissions.',
     );
@@ -73,17 +76,22 @@ const configPrettier = async () => {
   spinner.succeed();
   warnTip.forEach((warn) => logger.output.warn(warn));
 
-  spinner.start();
   spinner.text = logger.message.step({
     step: '[2/2]',
     content: 'Installing dependencies...',
   });
+  spinner.start();
 
-  childProcess.execSync('yarn add -D lint-staged prettier yorkie', (error) => {
-    if (error) {
-      logger.output.error(error);
-    }
-  });
+  await childProcess.exec(
+    'yarn add -D lint-staged prettier yorkie',
+    (_error, _stdout, stderr) => {
+      if (stderr) {
+        spinner.fail();
+        logger.output.error(stderr);
+        process.exit(1);
+      }
+    },
+  );
 
   spinner.succeed();
 };
