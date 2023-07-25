@@ -10,12 +10,15 @@ inquirer.registerPrompt('autocomplete', autocomplete);
 
 module.exports = async function templateGenerate(argv) {
   const { template } = config();
-  const { types, components } = { ...template };
+  const { types, components, generateDirectory, remoteRegistry } = {
+    ...template,
+  };
 
   // 指令参数可用
   if (argv.type && argv.component) {
     await generate({
-      ...template,
+      generateDirectory,
+      remoteRegistry,
       ...argv,
     });
     return;
@@ -70,7 +73,8 @@ module.exports = async function templateGenerate(argv) {
 
   await inquirer.prompt(questions).then(async (answers) => {
     await generate({
-      ...template,
+      generateDirectory,
+      remoteRegistry,
       ...answers,
     });
   });

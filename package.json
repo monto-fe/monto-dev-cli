@@ -1,61 +1,60 @@
 {
-	"name": "monto-dev-cli",
-	"version": "0.0.10",
-	"description": "Cli tool for frontend app dev",
-	"author": "heng.du, pengfei.lv",
-	"license": "MIT",
-	"type": "commonjs",
-	"bin": {
-		"monto-dev-cli": "index.js"
-	},
+  "name": "monto-dev-cli",
+  "version": "0.0.10",
+  "description": "Cli tool for frontend app dev",
+  "author": "heng.du, pengfei.lv",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "monto-dev-cli": "index.js"
+  },
   "postinstall": "node ./util/welcome.js",
-	"gitHooks": {
-		"pre-commit": "lint-staged"
-	},
-	"main": "index.js",
-	"files": [
-		"index.js",
-		"config.js",
-		"command",
-		"lib",
-		"README.md"
-	],
-	"scripts": {
-		"start": "node ./index.js",
-		"prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
-		"docs:update": "node scripts/docs.js",
-		"publish:patch": "npm version patch && npm publish --registry=https://registry.npmjs.org",
-		"publish:prerelease": "npm version prerelease && npm publish --registry=https://registry.npmjs.org"
-	},
-	"dependencies": {
-		"chalk": "4",
-		"execa": "^5.1.1",
-		"express": "^4.18.2",
-		"get-port": "5.1.0",
-		"http-proxy-middleware": "^2.0.6",
-		"inquirer": "^7.3.2",
-		"inquirer-autocomplete-prompt": "^1.4.0",
-		"mockjs": "^1.1.0",
-		"open": "8.4.2",
-		"ora": "^5.4.1",
-		"response-time": "^2.3.2",
-		"yargs": "^13.2.4"
-	},
-	"engines": {
-		"node": ">=8.10.0"
-	},
-	"devDependencies": {
-		"lint-staged": "^13.0.3",
-		"prettier": "^2.7.1",
-		"yorkie": "^2.0.0"
-	},
-	"lint-staged": {
-		"*.{js,jsx,less}": [
-			"prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
-			"npx eslint \"**/*.{js,ts}\""
-		],
-		"*.ts?(x)": [
-			"prettier --parser=typescript --write"
-		]
-	}
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "config.js",
+    "command",
+    "lib",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "node ./index.js",
+    "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
+    "docs:update": "node scripts/docs.js",
+    "publish:patch": "npm version patch && npm publish --registry=https://registry.npmjs.org",
+    "publish:prerelease": "npm version prerelease && npm publish --registry=https://registry.npmjs.org"
+  },
+  "dependencies": {
+    "chalk": "4",
+    "execa": "^5.1.1",
+    "express": "^4.18.2",
+    "get-port": "5.1.0",
+    "http-proxy-middleware": "^2.0.6",
+    "inquirer": "^7.3.2",
+    "inquirer-autocomplete-prompt": "^1.4.0",
+    "mockjs": "^1.1.0",
+    "open": "8.4.2",
+    "ora": "^5.4.1",
+    "response-time": "^2.3.2",
+    "yargs": "^13.2.4"
+  },
+  "engines": {
+    "node": ">=8.10.0"
+  },
+  "devDependencies": {
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.0",
+    "yorkie": "^2.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,less}": [
+      "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write"
+    ]
+  }
 }

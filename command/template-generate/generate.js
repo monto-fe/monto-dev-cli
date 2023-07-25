@@ -9,11 +9,11 @@ let spinner;
 
 function checkNodeVersion() {
   process.stdout.write('\n');
-  spinner.start();
   spinner.text = logger.message.step({
     step: '[1/4]',
     content: 'Pre-check processing...',
   });
+  spinner.start();
 
   const requiredNodeVersion = 12;
   const nodeVersion = process.versions.node;
@@ -41,11 +41,11 @@ function processParams(
   normalizedDirectoryPath,
   remoteRegistry,
 ) {
-  spinner.start();
   spinner.text = logger.message.step({
     step: '[2/4]',
     content: 'Collection params...',
   });
+  spinner.start();
 
   const result = {
     templeteRegistryUrls: [
@@ -65,11 +65,11 @@ function processParams(
 }
 
 function checkFolder(dirPath) {
-  spinner.start();
   spinner.text = logger.message.step({
     step: '[3/4]',
     content: 'Check folder...',
   });
+  spinner.start();
 
   if (fs.existsSync(dirPath)) {
     spinner.fail();
@@ -83,11 +83,11 @@ function checkFolder(dirPath) {
 }
 
 async function generateTemplete(urls) {
-  spinner.start();
   spinner.text = logger.message.step({
     step: '[4/4]',
     content: 'Generate templete...',
   });
+  spinner.start();
 
   try {
     await execa(`git`, ['clone', ...urls]);
