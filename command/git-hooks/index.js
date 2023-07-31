@@ -1,7 +1,7 @@
-const gitHooks = require('./gitHooks');
-const logger = require('../../lib/logger');
+import gitHooks from './gitHooks';
+import logger from '../../lib/logger';
 
-module.exports = function gitHooksCallback(argv) {
+export default function gitHooksCallback(argv) {
   // 配置 githooks，需在项目根目录下使用
   console.log(' ');
   console.log('================== start ==================');
@@ -17,4 +17,4 @@ module.exports = function gitHooksCallback(argv) {
     console.log('================== end ===================');
     console.log(' ');
   });
-};
+}

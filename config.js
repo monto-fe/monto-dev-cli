@@ -1,6 +1,6 @@
-const callback = require('./command/git-hooks');
-const templateGenerate = require('./command/template-generate');
-const mock = require('./command/mock');
+import callback from './command/git-hooks';
+import templateGenerate from './command/template-generate';
+import mock from './command/mock';
 
 const commandConfigs = [
   {
@@ -91,4 +91,4 @@ const commandConfigs = [
   },
 ];
 
-module.exports = commandConfigs;
+export default commandConfigs;

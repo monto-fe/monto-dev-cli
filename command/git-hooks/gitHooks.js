@@ -1,11 +1,10 @@
-const fs = require('fs');
-const ora = require('ora');
-const childProcess = require('child_process');
+import fs from 'fs';
+import ora from 'ora';
+import { execSync } from 'child_process';
+import logger from '../../lib/logger';
+import dataPackage from '../../package.json';
 
-const logger = require('../../lib/logger');
-const dataPackage = require('../../package.json');
-
-module.exports = async (argv) => {
+export default async (argv) => {
   // 1. 处理参数
   if (argv.prettier) {
     await configPrettier();
@@ -65,7 +64,7 @@ const configPrettier = async () => {
     content: '安装依赖中...',
   });
 
-  childProcess.execSync(
+  execSync(
     'yarn add -D lint-staged prettier yorkie',
     (error, stdout, stderr) => {
       console.log('config callback', error, stdout, stderr);

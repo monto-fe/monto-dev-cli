@@ -1,9 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const execa = require('execa');
-const ora = require('ora');
+import fs from 'fs';
+import path from 'path';
 
-const logger = require('../../lib/logger');
+import ora from 'ora';
+import logger from '../../lib/logger';
+import { execa } from 'execa';
 
 let spinner;
 
@@ -106,7 +106,7 @@ async function generateTemplete(urls) {
   process.stdout.write('\n');
 }
 
-module.exports = async function generate(argv) {
+export default async function generate(argv) {
   const { type, component, generateDirectory, remoteRegistry } = argv;
   spinner = ora();
 
@@ -135,4 +135,4 @@ module.exports = async function generate(argv) {
   await generateTemplete(params.templeteRegistryUrls);
 
   logger.output.success('Template generation task completed.');
-};
+}

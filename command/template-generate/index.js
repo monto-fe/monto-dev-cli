@@ -1,14 +1,14 @@
-const yargs = require('yargs');
-const inquirer = require('inquirer');
-const autocomplete = require('inquirer-autocomplete-prompt');
+// const yargs = require('yargs');
+import inquirer from 'inquirer';
+import autocomplete from 'inquirer-autocomplete-prompt';
 
-const generate = require('./generate');
-const config = require('../../lib/config');
-const logger = require('../../lib/logger');
+import generate from './generate';
+import config from '../../lib/config';
+import logger from '../../lib/logger';
 
 inquirer.registerPrompt('autocomplete', autocomplete);
 
-module.exports = async function templateGenerate(argv) {
+export default async function templateGenerate(argv) {
   const { template } = config();
   const { types, components } = { ...template };
 
@@ -32,7 +32,7 @@ module.exports = async function templateGenerate(argv) {
     logger.output.warn('No template available, please check your config ~');
 
     process.stdout.write('\n');
-    yargs.showHelp();
+    // yargs.showHelp();
     process.exit(0);
   }
 
@@ -74,4 +74,4 @@ module.exports = async function templateGenerate(argv) {
       ...answers,
     });
   });
-};
+}

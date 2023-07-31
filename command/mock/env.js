@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
   mockPath: {
     action: './mock/action',
     restful: './mock/restful',
@@ -17,3 +17,5 @@ module.exports = {
     'Content-Type': 'application/json;charset=utf-8',
   },
 };
+
+export default config;

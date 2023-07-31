@@ -1,10 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-const ora = require('ora');
-const getPort = require('get-port');
-const bodyParser = require('body-parser');
-const env = require('../env');
-const logger = require('../../../lib/logger');
+import fs from 'fs';
+import path from 'path';
+import ora from 'ora';
+import getPort, { portNumbers } from 'get-port';
+import bodyParser from 'body-parser';
+import logger from '../../../lib/logger';
+import env from '../env';
 
 function readJson(filePath) {
   const data = fs.readFileSync(filePath, 'utf8');
@@ -13,8 +13,9 @@ function readJson(filePath) {
 }
 
 async function getIdlePort(defaultPort) {
+  console.log('portNumbers', defaultPort);
   return await getPort({
-    port: getPort.makeRange(defaultPort, defaultPort + 1),
+    port: portNumbers(defaultPort, defaultPort + 100),
   });
 }
 
@@ -108,7 +109,7 @@ const jsonParser = bodyParser.json({
   limit: env.requestLimit,
 });
 
-module.exports = {
+export {
   readJson,
   checkAction,
   createActionMockData,
