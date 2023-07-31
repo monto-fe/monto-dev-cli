@@ -1,14 +1,12 @@
 import gitHooks from './gitHooks';
 import logger from '../../lib/logger';
 
-export default function gitHooksCallback(argv) {
+export default async function gitHooksCallback(argv) {
   // 配置 githooks，需在项目根目录下使用
-  console.log(' ');
-  console.log('================== start ==================');
-  console.log(' ');
-  logger.output.success('Start to config: ' + argv.prettier);
+  logger.output.log('Start to config');
+  process.stdout.write('\n');
 
-  gitHooks(argv);
+  await gitHooks(argv);
 
   setTimeout(() => {
     console.log(' ');

@@ -1,4 +1,4 @@
-import callback from './command/git-hooks';
+import gitHooksCallback from './command/git-hooks';
 import templateGenerate from './command/template-generate';
 import mock from './command/mock';
 
@@ -31,18 +31,17 @@ const commandConfigs = [
   {
     command: ['config', 'c'],
     showInHelp: true,
-    description: '使用方式: dux-react-dev-cli c -p',
+    description: '使用 githooks 配置项目',
     descriptionEN: 'start to use githooks to config',
     options: {
       prettier: {
         alias: 'p',
-        type: 'string',
-        default: 'prettier',
+        type: 'bool',
         describe: '配置 prettier',
         describeEN: 'Config prettier',
       },
     },
-    callback: callback,
+    callback: gitHooksCallback,
   },
   {
     command: 'mock',
