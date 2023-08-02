@@ -8,6 +8,6 @@
     "sourceType": "module",
     "ecmaVersion": "2022"
   },
-  "ignorePatterns": ["mock/*", "*.md", "*.json"],
+  "ignorePatterns": ["mock/*", "*.md", "*.json", "test"],
   "rules": {}
 }

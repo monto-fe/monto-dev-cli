@@ -1,6 +1,6 @@
-import gitHooksCallback from './command/git-hooks';
-import templateGenerate from './command/template-generate';
-import mock from './command/mock';
+import gitHooksCallback from '../lib/git-hooks';
+import templateGenerate from '../lib/template-generate';
+import mock from '../lib/mock';
 
 const commandConfigs = [
   {

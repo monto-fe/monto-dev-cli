@@ -3,7 +3,7 @@
 /* eslint-disable */
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import config from './config';
+import config from './command/config';
 
 // const logger = require('./lib/logger');
 

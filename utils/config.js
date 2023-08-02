@@ -7,8 +7,6 @@ import Const from './const';
 import logger from './logger';
 import defaultConfig from './default.config.json';
 const require = createRequire(import.meta.url);
-// const defaultConfig = require('./default.config.json');
-console.log('defaultConfig', defaultConfig);
 
 const { configName, mock } = Const;
 const { libMock } = mock;
