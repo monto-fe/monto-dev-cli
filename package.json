@@ -26,7 +26,7 @@
     "docs:update": "node scripts/docs.js",
     "publish:patch": "npm version patch && npm publish --registry=https://registry.npmjs.org",
     "publish:prerelease": "npm version prerelease && npm publish --registry=https://registry.npmjs.org",
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest"
   },
   "dependencies": {
     "chalk": "^5.3.0",

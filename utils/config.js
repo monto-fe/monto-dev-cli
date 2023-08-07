@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url);
 const { configName, mock } = Const;
 const { libMock } = mock;
 
-const getUserConfig = () => {
+const getUserConfig = (configName) => {
   const configPath = path.resolve(process.cwd(), configName);
   if (fs.existsSync(configPath)) {
     return require(configPath) || {};
@@ -21,7 +21,7 @@ const getUserConfig = () => {
 };
 
 const getMergedConfigParams = () => {
-  const userConfig = getUserConfig();
+  const userConfig = getUserConfig(configName);
 
   if (!(userConfig instanceof Object)) {
     logger.output.wain('The configuration file should return a JSON object !');
