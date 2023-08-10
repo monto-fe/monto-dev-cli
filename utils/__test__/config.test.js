@@ -2,7 +2,6 @@ import config from '../config';
 
 describe('getUserConfig', () => {
   const baseConfig = config();
-  console.log('result', baseConfig);
   const expectedTypes = ['react', 'vue'];
 
   const expectedComponents = {
