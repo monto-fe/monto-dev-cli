@@ -1,4 +1,4 @@
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 const colorMapper = {
   dim: (msg) => chalk.dim(msg),
@@ -23,7 +23,7 @@ for (const key in colorMapper) {
   message[key] = (msg) => mapper(msg);
 }
 
-module.exports = {
+export default {
   output,
   message,
 };

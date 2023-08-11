@@ -1,21 +1,18 @@
 // Process the requested parameters for configuration
 // and filter the necessary parameters based on the functionality.
-const path = require('path');
-const fs = require('fs');
-const { configName, defaultConfigName, mock: libMock } = require('./const');
-const logger = require('./logger');
+import path from 'path';
+import fs from 'fs';
+import { createRequire } from 'module';
+import Const from './const';
+import logger from './logger';
+import defaultConfig from './default.config.json';
+const require = createRequire(import.meta.url);
 
-const getDefaultConfig = () => {
-  const defaultConfigPath = path.join(__dirname, '../', defaultConfigName);
-  if (fs.existsSync(defaultConfigPath)) {
-    return require(defaultConfigPath) || {};
-  }
+const { configName, mock } = Const;
+const { libMock } = mock;
 
-  return {};
-};
-
-const getUserConfig = () => {
-  const configPath = path.resolve(configName);
+const getUserConfig = (configName) => {
+  const configPath = path.resolve(process.cwd(), configName);
   if (fs.existsSync(configPath)) {
     return require(configPath) || {};
   }
@@ -24,8 +21,7 @@ const getUserConfig = () => {
 };
 
 const getMergedConfigParams = () => {
-  const defaultConfig = getDefaultConfig();
-  const userConfig = getUserConfig();
+  const userConfig = getUserConfig(configName);
 
   if (!(userConfig instanceof Object)) {
     logger.output.wain('The configuration file should return a JSON object !');
@@ -50,13 +46,9 @@ const getConfig = () => {
   const { mock, template } = getMergedConfigParams();
 
   return {
-    mock: {
-      ...mock,
-    },
-    template: {
-      ...template,
-    },
+    mock,
+    template,
   };
 };
 
-module.exports = getConfig;
+export default getConfig;
