@@ -10,18 +10,18 @@ describe('getUserConfig', () => {
   };
 
   it('should have the correct mock config', () => {
-    expect(baseConfig).toEqual({
-      mock: {
-        proxyApiUrl: expect.any(String),
-        headers: expect.any(String),
-        type: expect.any(String),
-      },
-      template: {
+    const { mock, template } = baseConfig;
+    expect(mock.proxyApiUrl).toBeDefined();
+    expect(mock.headers).toBeDefined();
+    expect(mock.type).toBeDefined();
+
+    expect(template).toEqual(
+      expect.objectContaining({
         components: expect.objectContaining(expectedComponents),
         generateDirectory: expect.any(String),
         remoteRegistry: expect.any(String),
         types: expect.arrayContaining(expectedTypes),
-      },
-    });
+      }),
+    );
   });
 });

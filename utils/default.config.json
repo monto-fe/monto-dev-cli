@@ -9,6 +9,8 @@
     }
   },
   "mock": {
-    "proxyApiUrl": ""
+    "proxyApiUrl": "",
+    "headers": "",
+    "type": ""
   }
 }
